@@ -32,6 +32,18 @@ app.add_url_rule('/logout',
                  view_func=Logout.as_view('logout'),
                  methods=["GET"])
 
+@app.route("/hello/<apikey>/", methods=["GET"])
+def hello_world(apikey):
+    """Mock API that requires API key validation."""
+    # Check if API key is provided
+    if not apikey:
+        return jsonify({"error": "Missing API key"}), 400
 
+    # Validate API Key
+    if not validate_api_key(apikey):
+        return jsonify({"error": "Unauthorized. Invalid API key"}), 401
+        
+    # If we get here, the API key is valid
+    return jsonify({"message": "Hello, World!", "status": "Success"}), 200
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
