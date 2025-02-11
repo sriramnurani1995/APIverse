@@ -72,7 +72,30 @@ def get_user_api_keys(user_email):
 
 def validate_api_key(api_key):
     """Validate an API key by checking its existence, expiration, and revocation status."""
-    pass
+    try:
+        # Get all active API keys
+        api_keys = datastore_model.get_all_active_api_keys() 
+        current_time = datetime.now(timezone.utc)
+
+        # Check each key
+        for entry in api_keys:
+            # Skip if expired
+            if entry['expires_at'] <= current_time:
+                continue
+
+            # Compare hashed values
+            salt = entry['salt']
+            stored_hash = entry['hashed_api_key']
+            test_hash = hash_api_key(api_key, salt)
+
+            if test_hash == stored_hash:
+                return True
+
+        return False
+
+    except Exception as e:
+        print(f"Error validating API key: {e}")
+        return False
 
 def revoke_api_key(user_email, api_key_id):
     """Revoke an API key."""
