@@ -91,4 +91,6 @@ class model:
     # Get all active api keys
     def get_all_active_api_keys(self):
         """Fetch all active API keys for validation."""
-        pass
+        query = self.client.query(kind='APIKey')
+        query.add_filter('revoked', '=', False)
+        return list(query.fetch())
