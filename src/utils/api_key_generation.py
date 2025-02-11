@@ -28,7 +28,7 @@ def store_api_key(user_email, session):
         raw_api_key = generate_api_key()
         salt = generate_salt()
         hashed_api_key = hash_api_key(raw_api_key, salt)
-        expiration_date = datetime.now(timezone.utc) + timedelta(days=30)  # 30-day validity
+        expiration_date = datetime.now(timezone.utc) + timedelta(days=365)  # 365-day validity
 
         # Store API key in Datastore
         success = datastore_model.store_api_key(
