@@ -1,0 +1,312 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f9;
+    /* Light gray background */
+    color: #333;
+    /* Dark text */
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    color: #2c3e50;
+    /* Dark blue */
+    margin-bottom: 20px;
+}
+
+/* API Key Box */
+.api-key-box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* API Key Section */
+.api-key-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.api-key-section input {
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #27ae60;
+    /* Green for API Key */
+}
+
+.api-key-section button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* API Key Expiry */
+small {
+    color: #e74c3c;
+    /* Red for urgency */
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-generate,
+.btn-revoke,
+.btn-black {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.btn-generate {
+    background: #3498db;
+    /* Blue */
+    color: #fff;
+}
+
+.btn-revoke {
+    background: #e74c3c;
+    /* Red */
+    color: #fff;
+}
+
+.btn-black {
+    background: #2c3e50;
+    /* Dark Blue */
+    color: #fff;
+}
+
+/* API Keys List */
+.api-keys-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: left;
+}
+
+.api-keys-list li {
+    background: #ecf0f1;
+    /* Light gray */
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.api-keys-list form {
+    display: inline;
+}
+
+/* Login Page Styles */
+.login-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btn-login {
+    width: 100%;
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-login:hover {
+    background: #2980b9;
+}
+
+.signup-text {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.signup-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+/* Signup Page Styles */
+.signup-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.signup-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btn-signup {
+    width: 100%;
+    background: #27ae60;
+    /* Green */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-signup:hover {
+    background: #229954;
+}
+
+.login-text {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link {
+    color: #27ae60;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+/* Home Page Styles */
+.home-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.highlight {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.api-list {
+    list-style: none;
+    padding: 0;
+}
+
+.api-list li {
+    font-size: 16px;
+    background: #ecf0f1;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+code {
+    background: #34495e;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-family: monospace;
+}
+
+.btn-dashboard {
+    display: inline-block;
+    margin-top: 20px;
+    background: #27ae60;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-dashboard:hover {
+    background: #229954;
+}
