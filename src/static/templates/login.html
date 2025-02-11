@@ -1,25 +1,43 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 
 <!-- Link External CSS File -->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static', filename='styles.css') }}"
+/>
 
 <div class="login-container">
-    <h2>Login</h2>
+  <h2>Login</h2>
 
-    {% if error %}
-    <p class="error-message">{{ error }}</p>
-    {% endif %}
+  {% if error %}
+  <p class="error-message">{{ error }}</p>
+  {% endif %}
 
-    <form method="post" class="login-form">
-        <input type="email" name="email" placeholder="PDX Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="submit" value="Login" class="btn-login">
-    </form>
+  <form method="post" class="login-form">
+    <label for="email">Email</label>
+    <input
+      type="email"
+      name="email"
+      placeholder="PDX Email"
+      id="email"
+      required
+    />
+    <label for="password">Password</label>
+    <input
+      type="password"
+      name="password"
+      placeholder="Password"
+      id="password"
+      required
+    />
+    <input type="submit" value="Login" class="btn-login" />
+  </form>
 
-    <p class="signup-text">Don't have an account?
-        <a href="{{ url_for('signup') }}" class="signup-link">Sign Up</a>
-    </p>
+  <p class="signup-text">
+    Don't have an account?
+    <a href="{{ url_for('signup') }}" class="signup-link">Sign Up</a>
+  </p>
 </div>
 
 {% endblock %}
