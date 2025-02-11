@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>API Key</h2>
+
+<div class="api-key-box">
+    <p><strong>Email:</strong> {{ email }}</p>
+    {% if raw_api_key %}
+    <div class="api-key-section">
+        <input type="text" id="apiKey" value="{{ raw_api_key }}" readonly>
+        <button onclick="copyKey()">
+            <img src="{{ url_for('static', filename='copy-icon.png') }}" alt="Copy" width="20px">
+        </button>
+    </div>
+    <p><small>This API key will expire in <span id="countdown">{{ remaining_time }}</span> seconds.</small></p>
+    {% else %}
+    <p>No API key is currently available. Please generate a new API key.</p>
+    <div class="api-key-buttons">
+        <form action="{{ url_for('dashboard') }}" method="post" style="display:inline;">
+            <input type="hidden" name="generate_key" value="1">
+            <input type="submit" value="Generate" class="btn-generate">
+        </form>
+    </div>
+    {% endif %}
+
+
+</div>
+
+<h3>Your API Keys:</h3>
+{% if api_keys %}
+<ul class="api-keys-list">
+    {% for key in api_keys %}
+    <li>
+        Masked Key: {{ key.masked_key }} | Expiration: {{ key.expires_at.strftime('%Y-%m-%d') }}
+        <form action="{{ url_for('dashboard') }}" method="post" style="display:inline;">
+            <input type="hidden" name="revoke_key" value="{{ key.api_key_id }}">
+            <input type="submit" value="Revoke" class="btn-revoke"
+                onclick="return confirm('Are you sure you want to revoke this key?');">
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No active API keys.</p>
+{% endif %}
+
+<script>
+    function copyKey() {
+        let apiKeyElement = document.getElementById("apiKey");
+        navigator.clipboard.writeText(apiKeyElement.value).then(() => {
+            alert(" API Key copied to clipboard!");
+        }).catch(err => {
+            console.error(" Copy Error:", err);
+        });
+    }
+
+    // Countdown for API Key visibility
+    let countdown = {{ remaining_time }};
+    let countdownElement = document.getElementById("countdown");
+
+    if (countdownElement && countdown > 0) {
+        let interval = setInterval(function () {
+            countdown -= 1;
+            countdownElement.innerText = countdown; // Update the countdown UI
+            if (countdown <= 0) {
+                clearInterval(interval);
+                location.reload(); // Refresh the page when timer reaches 0
+            }
+        }, 1000);
+    }
+</script>
+{% endblock %}

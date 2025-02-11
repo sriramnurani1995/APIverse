@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Link External CSS File -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+
+<div class="home-container">
+    <h2>Welcome to <span class="highlight">APIverse</span></h2>
+    <p class="description">Your one-stop API hub for seamless integration!</p>
+
+    <h3>Available APIs:</h3>
+    <ul class="api-list">
+        <li><strong>Random Text Generator:</strong> <code>/random-text</code></li>
+        <li><strong>Weather API (Coming Soon):</strong> <code>/weather</code></li>
+    </ul>
+
+    <a href="{{ url_for('dashboard') }}" class="btn-dashboard">
+        Go to Dashboard
+    </a>
+</div>
+
+{% endblock %}
