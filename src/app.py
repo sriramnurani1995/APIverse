@@ -135,6 +135,79 @@ def get_weather_for_month(apikey):
     response = requests.get(fastapi_url, params=request.args)
     return response.content, response.status_code
 
+@app.route("/api/generate_course/<apikey>", methods=["GET", "POST"])
+def generate_course(apikey):
+    """Allows both GET (with query parameters) and POST (with JSON) for course creation."""
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response  # Unauthorized if API Key is invalid
+
+    fastapi_url = f"{FASTAPI_URL}/api/generate_course"
+
+
+    if request.method == "GET":
+
+        homeworkWeight = request.args.get("homeworkWeight", type=int, default=40)
+        discussionWeight = request.args.get("discussionWeight", type=int, default=30)
+        examWeight = request.args.get("examWeight", type=int, default=30)
+
+ 
+        weight_sum = homeworkWeight + discussionWeight + examWeight
+        if weight_sum != 100:
+            return jsonify({"error": f"Total weightage must be exactly 100%. Provided: {weight_sum}%"}), 400
+
+        response = requests.get(fastapi_url, params=request.args)
+
+
+        if response.status_code != 200:
+            return jsonify({"error": response.text}), response.status_code  # Return error as JSON
+
+        return jsonify(response.json()), response.status_code
+
+    if request.method == "POST":
+        data = request.json
+
+        homeworkWeight = data.get("homeworkWeight", 40)
+        discussionWeight = data.get("discussionWeight", 30)
+        examWeight = data.get("examWeight", 30)
+
+        weight_sum = homeworkWeight + discussionWeight + examWeight
+        if weight_sum != 100:
+            return jsonify({"error": f"Total weightage must be exactly 100%. Provided: {weight_sum}%"}), 400
+
+        response = requests.post(fastapi_url, json=data)
+
+        if response.status_code != 200:
+            return jsonify({"error": response.text}), response.status_code  # Return error as JSON
+
+        return jsonify(response.json()), response.status_code
+
+
+
+@app.route("/api/header/<apikey>/<courseId>", methods=["GET"])
+def get_course_header(apikey, courseId):
+    """Fetches course header from FastAPI after validating API Key."""
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+
+    fastapi_url = f"{FASTAPI_URL}/api/header/{courseId}"
+    response = requests.get(fastapi_url)
+    return jsonify(response.json()), response.status_code
+
+@app.route("/api/gradebook/<apikey>/<courseId>", methods=["GET"])
+def get_gradebook(apikey, courseId):
+    """Fetches gradebook data from FastAPI in multiple formats after API Key validation."""
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+
+    format_type = request.args.get("format", "json")  # Default to JSON if format is not provided
+    fastapi_url = f"{FASTAPI_URL}/api/gradebook/{courseId}?format={format_type}"
+    response = requests.get(fastapi_url)
+
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
     

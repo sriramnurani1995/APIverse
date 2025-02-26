@@ -188,3 +188,68 @@ class model:
         keys = [entity.key for entity in query.fetch()]
         if keys:
             self.client.delete_multi(keys)
+    def save_course(self, courseId, weightage, components):
+        """
+        Stores the course details in Google Cloud Datastore.
+
+        :param courseId: Unique course identifier
+        :param weightage: Dictionary of weightage for different grading components
+        :param components: Dictionary of components count (e.g., numHomeworks, numDiscussions, numExams)
+        """
+        course_key = self.client.key("Course", courseId)
+        course = datastore.Entity(course_key)
+        course.update({
+            "courseId": courseId,
+            "weightage": weightage,
+            "components": components
+        })
+        self.client.put(course)
+
+    
+    def get_course(self, courseId):
+        """
+        Fetches course details from Google Cloud Datastore.
+
+        :param courseId: Unique course identifier
+        :return: Course entity if found, else None
+        """
+        course_key = self.client.key("Course", courseId)
+        return self.client.get(course_key)
+
+    
+    def save_student(self, courseId, studentId, name, components, weightedPercentages, finalPercentage, finalGrade):
+        """
+        Stores a student’s grades and calculated weighted percentages in Google Cloud Datastore.
+
+        :param courseId: Course ID student belongs to
+        :param studentId: Unique student identifier
+        :param name: Student name
+        :param components: List of grading components (Homework, Discussions, Exams)
+        :param weightedPercentages: Dictionary of weighted percentages per grading category
+        :param finalPercentage: Final weighted percentage score
+        :param finalGrade: Final letter grade (A, B, C, D, F)
+        """
+        student_key = self.client.key("Student", f"{courseId}_{studentId}")
+        student = datastore.Entity(student_key)
+        student.update({
+            "courseId": courseId,
+            "studentId": studentId,
+            "name": name,
+            "components": components,
+            "weightedPercentages": weightedPercentages,
+            "finalPercentage": finalPercentage,
+            "finalGrade": finalGrade
+        })
+        self.client.put(student)
+
+    
+    def get_students(self, courseId):
+        """
+        Fetches all students enrolled in a specific course from Google Cloud Datastore.
+
+        :param courseId: Course ID
+        :return: List of student entities
+        """
+        query = self.client.query(kind="Student")
+        query.add_filter("courseId", "=", courseId)
+        return list(query.fetch())
