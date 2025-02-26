@@ -159,3 +159,32 @@ class model:
             else:
                 print(f"Mapped Image Not Found: {image_path}")
         return os.path.abspath(os.path.join(category_dirs[category], "default.jpg"))
+    
+    def store_weather_data(self, date, data):
+        """Store weather data for a specific date in Datastore."""
+        key = self.client.key('Weather', date)
+        entity = datastore.Entity(key)
+        entity.update(data)
+        self.client.put(entity)
+
+    def get_weather_data(self, date):
+        """Retrieve weather data for a specific date."""
+        key = self.client.key('Weather', date)
+        entity = self.client.get(key)
+        return dict(entity) if entity else None
+
+    def get_weather_days_in_month(self, month):
+        """Retrieve all stored weather dates for a given month."""
+        query = self.client.query(kind='Weather')
+        query.add_filter("date", ">=", f"{month}-01")
+        query.add_filter("date", "<=", f"{month}-31")
+        return [entity["date"] for entity in query.fetch()]
+
+    def clear_weather_month(self, month):
+        """Delete all weather data entries for an incomplete month to maintain consistency."""
+        query = self.client.query(kind='Weather')
+        query.add_filter("date", ">=", f"{month}-01")
+        query.add_filter("date", "<=", f"{month}-31")
+        keys = [entity.key for entity in query.fetch()]
+        if keys:
+            self.client.delete_multi(keys)

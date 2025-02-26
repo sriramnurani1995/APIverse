@@ -9,7 +9,8 @@ from model.model_datastore import model
 from utils.helpers import cleanup_old_files
 from contextlib import asynccontextmanager
 import asyncio
-
+from services.weather_service import get_weather_for_date, get_weather_for_month
+from datetime import datetime
 
 
 db = model()  
@@ -86,3 +87,13 @@ def get_paragraphs(
 def download_file(file: str):
     """Serve any generated file for download with correct MIME type."""
     return get_downloadable_file_response(file)
+
+@app.get("/weather/date/")
+def weather_by_date(date: str = Query(None), format: str = Query("json")):
+    date = date or datetime.now().strftime("%Y-%m-%d")
+    return get_weather_for_date(date, format)
+
+@app.get("/weather/month/")
+def weather_by_month(month: str = Query(None), format: str = Query("json")):
+    month = month or datetime.now().strftime("%Y-%m")
+    return get_weather_for_month(month, format)
