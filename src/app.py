@@ -112,6 +112,29 @@ def download_file():
         return flask.Response(response.content, response.status_code, response.headers.items())
     
     return flask.jsonify({"error": "File not found"}), 404
+
+# Weather API (Single Date)
+@app.route("/api/weather/date/<apikey>", methods=["GET"])
+def get_weather_for_date(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+
+    fastapi_url = f"{FASTAPI_URL}/weather/date/"
+    response = requests.get(fastapi_url, params=request.args)
+    return response.content, response.status_code
+
+# Weather API (Monthly)
+@app.route("/api/weather/month/<apikey>", methods=["GET"])
+def get_weather_for_month(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+
+    fastapi_url = f"{FASTAPI_URL}/weather/month/"
+    response = requests.get(fastapi_url, params=request.args)
+    return response.content, response.status_code
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
     
