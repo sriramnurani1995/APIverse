@@ -1,6 +1,11 @@
+import os
+import random
+import utils.helpers as helpers
 from google.cloud import datastore
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timezone
+
+
 
 class model:
     def __init__(self):
@@ -94,3 +99,63 @@ class model:
         query = self.client.query(kind='APIKey')
         query.add_filter('revoked', '=', False)
         return list(query.fetch())
+    def clear_image_mappings(self):
+        """Clears existing image mappings in Datastore."""
+        query = self.client.query(kind="ImageMapping")
+        keys = [entity.key for entity in query.fetch()]
+        if keys:
+            self.client.delete_multi(keys)
+            
+
+    def create_image_mappings(self):
+        """Creates image mappings by scanning static directories."""
+        self.clear_image_mappings()
+
+        category_dirs = helpers.get_category_directories()
+
+        for category, directory in category_dirs.items():
+            if not os.path.exists(directory):
+                continue
+
+            for filename in os.listdir(directory):
+                if filename.endswith((".jpg", ".png", ".jpeg")):
+                    name = os.path.splitext(filename)[0]
+                    key = self.client.key("ImageMapping", f"{category}-{name}")
+                    entity = datastore.Entity(key)
+                    entity.update({
+                        "category": category,
+                        "name": name,
+                        "location": os.path.join(directory, filename)
+                    })
+                    self.client.put(entity)
+
+
+    def get_image_path(self, category: str, name: str) -> str:
+        """Fetch image path from Datastore. Supports 'random' selection."""
+        category_dirs = helpers.get_category_directories()
+
+        if category not in category_dirs:
+            return None
+
+        if name == "random":
+            query = self.client.query(kind="ImageMapping")
+            query.add_filter("category", "=", category)
+            images = list(query.fetch())
+
+            if images:
+                selected_image = random.choice(images)  
+                image_path = os.path.abspath(selected_image["location"])
+                return image_path
+            else:
+                return os.path.abspath(os.path.join(category_dirs[category], "default.jpg"))
+
+        key = self.client.key("ImageMapping", f"{category}-{name}")
+        entity = self.client.get(key)
+
+        if entity:
+            image_path = os.path.abspath(entity["location"])
+            if os.path.exists(image_path):
+                return image_path
+            else:
+                print(f"Mapped Image Not Found: {image_path}")
+        return os.path.abspath(os.path.join(category_dirs[category], "default.jpg"))
