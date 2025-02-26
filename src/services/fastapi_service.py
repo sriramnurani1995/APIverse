@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException,Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 import os
 from utils.image_processing import resize_image
@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 import asyncio
 from services.weather_service import get_weather_for_date, get_weather_for_month
 from datetime import datetime
-
+from services.gradebook_service import create_course, get_course_header, get_students_by_course
 
 db = model()  
 
@@ -97,3 +97,119 @@ def weather_by_date(date: str = Query(None), format: str = Query("json")):
 def weather_by_month(month: str = Query(None), format: str = Query("json")):
     month = month or datetime.now().strftime("%Y-%m")
     return get_weather_for_month(month, format)
+
+@app.api_route("/api/generate_course", methods=["GET", "POST"])
+async def generate_course(
+    request: Request,
+    courseId: str = Query(None),
+    numStudents: int = Query(20, ge=1),
+    numHomeworks: int = Query(3, ge=0),
+    numDiscussions: int = Query(2, ge=0),
+    numExams: int = Query(1, ge=0),
+    homeworkWeight: int = Query(40, ge=0),
+    discussionWeight: int = Query(30, ge=0),
+    examWeight: int = Query(30, ge=0)
+):
+    """
+    Allows both GET (with query parameters) and POST (with JSON) for course creation.
+    """
+
+   
+    if request.method == "POST":
+        try:
+            data = await request.json()
+            courseId = data.get("courseId")
+            numStudents = data.get("numStudents", 20)
+            numHomeworks = data.get("numHomeworks", 3)
+            numDiscussions = data.get("numDiscussions", 2)
+            numExams = data.get("numExams", 1)
+            homeworkWeight = data.get("homeworkWeight", 40)
+            discussionWeight = data.get("discussionWeight", 30)
+            examWeight = data.get("examWeight", 30)
+        except Exception:
+            return JSONResponse(status_code=400, content={"error": "Invalid JSON payload"})
+
+   
+    if not courseId:
+        return JSONResponse(status_code=422, content={"error": "courseId is required"})
+
+    
+    return create_course(courseId, numStudents, numHomeworks, numDiscussions, numExams, homeworkWeight, discussionWeight, examWeight)
+
+@app.get("/api/header/{courseId}")
+def get_course_header_api(courseId: str):
+    course = get_course_header(courseId)
+    if not course:
+        raise HTTPException(status_code=404, detail=f"Course {courseId} not found.")
+    return course
+
+@app.get("/api/gradebook/{courseId}")
+def get_gradebook(courseId: str, format: str = "json"):
+    students = get_students_by_course(courseId)
+    course = get_course_header(courseId)
+    
+    if not course:
+        raise HTTPException(status_code=404, detail=f"Course {courseId} not found.")
+
+    if format == "json":
+        return students
+
+    gradebook_styles = {
+        "body": "font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4;",
+        "h2": "text-align: center; color: #333;",
+        "table": "width: 100%; border-collapse: collapse; margin-top: 20px; background: white;",
+        "th, td": "padding: 12px; text-align: center; border: 1px solid black;",
+        "th": "background-color: darkviolet; color: white; font-size: 16px;",
+        "td": "font-size: 14px;",
+        ".A": "background-color: #d4edda;",
+        ".B": "background-color: #c3e6cb;",
+        ".C": "background-color: #ffeeba;",
+        ".D": "background-color: #f5c6cb;",
+        ".F": "background-color: #f8d7da;",
+    }
+
+
+    component_headers = ""
+    for comp_type, count in course["components"].items():
+        for i in range(1, count + 1):
+            component_headers += f"<th>{comp_type} {i}</th>"
+        component_headers += f"<th>{comp_type} Weighted %</th>"  # Adding weighted percentage column
+
+    html_table_content = f"""
+    <table>
+        <tr><th>Student ID</th><th>Name</th>{component_headers}<th>Final Percentage</th><th>Grade</th></tr>
+    """
+
+    
+    for student in students:
+        final_grade = student.get('finalGrade', 'N/A')
+        grade_class = f' class="{final_grade}"' if final_grade in ["A", "B", "C", "D", "F"] else ""
+
+        row_values = ""
+        weighted_percentages = student.get("weightedPercentages", {})
+
+        for comp_type, count in course["components"].items():
+            marks_list = [comp['marks'] for comp in student['components'] if comp['type'] == comp_type]
+            row_values += "".join(f"<td>{mark}</td>" for mark in marks_list)
+            row_values += f"<td>{weighted_percentages.get(comp_type, 'N/A')}%</td>"
+
+        html_table_content += f"""
+        <tr{grade_class}>
+        <td>{student['studentId']}</td>
+        <td>{student['name']}</td>
+        {row_values}
+        <td>{student.get('finalPercentage', 'N/A')}%</td>
+        <td>{final_grade}</td>
+        </tr>"""
+    
+    html_table_content += "</table>"
+
+
+    html_content = generate_html_page(f"Gradebook for {courseId}", html_table_content, gradebook_styles)
+
+    if format == "download":
+        
+        file_path = save_file(content=html_content, file_extension="html", folder="static/downloads")
+        return HTMLResponse(content=generate_download_page("Your Gradebook HTML", file_path, f"{courseId}_gradebook.html", gradebook_styles))
+
+    return HTMLResponse(content=html_content)
