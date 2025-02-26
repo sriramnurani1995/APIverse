@@ -6,7 +6,6 @@ def test_generate_html_page_basic():
     title = "Test Page"
     content = "<p>Hello, World!</p>"
     html_output = generate_html_page(title, content)
-
     assert "<!DOCTYPE html>" in html_output
     assert "<html" in html_output
     assert "<head>" in html_output
