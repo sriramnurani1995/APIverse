@@ -183,19 +183,251 @@ Generate placeholder text paragraphs.
 }
 ```
 
+
 ### Weather API
+
+Generate random but consistent weather data.
 
 #### Single Date Weather
 
+**Endpoint**: `/api/weather/date/<apikey>`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+
+**Query Parameters**:
+
+- `date`: Date in YYYY-MM-DD format - default: current date
+- `format`: Output format ('json', 'html', 'download') - default: 'json'
+
+**Response**:
+
+- JSON object with weather data
+- HTML page with formatted weather data
+- Downloadable HTML file
+
+**Example**: `/api/weather/date/YOUR_API_KEY?date=2023-06-15&format=json`
+
+**Sample Response**:
+
+```json
+{
+  "date": "2023-06-15",
+  "temperature": 28,
+  "wind": 12,
+  "precipitation": 5,
+  "condition": "Sunny",
+  "description": "Clear skies and warm temperatures."
+}
+```
+
 #### Monthly Weather
+
+**Endpoint**: `/api/weather/month/<apikey>`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+
+**Query Parameters**:
+
+- `month`: Month in YYYY-MM format - default: current month
+- `format`: Output format ('json', 'html', 'download') - default: 'json'
+
+**Response**:
+
+- JSON array with daily weather data
+- HTML page with formatted weather table
+- Downloadable HTML file
+
+**Example**: `/api/weather/month/YOUR_API_KEY?month=2023-06&format=json`
+
+**Sample Response**:
+
+```json
+[
+  {
+    "date": "2023-06-01",
+    "temperature": 26,
+    "wind": 8,
+    "precipitation": 0,
+    "condition": "Sunny",
+    "description": "Clear skies and warm temperatures."
+  },
+  {
+    "date": "2023-06-02",
+    "temperature": 29,
+    "wind": 12,
+    "precipitation": 3,
+    "condition": "Cloudy",
+    "description": "Overcast skies with mild temperatures."
+  }
+  // ... additional days of the month
+]
+```
+
+**HTML Format Example**: `/api/weather/month/YOUR_API_KEY?month=2023-06&format=html`
 
 ### Gradebook API
 
+Generate and manage course gradebooks.
+
 #### Generate Course
+
+**Endpoint**: `/api/generate_course/<apikey>`
+
+**Methods**: GET, POST
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+
+**Query/Body Parameters**:
+
+- `courseId`: Unique course identifier (required)
+- `numStudents`: Number of students - default: 20
+- `numHomeworks`: Number of homework assignments - default: 3
+- `numDiscussions`: Number of discussion assignments - default: 2
+- `numExams`: Number of exams - default: 1
+- `homeworkWeight`: Homework percentage weight - default: 40
+- `discussionWeight`: Discussion percentage weight - default: 30
+- `examWeight`: Exam percentage weight - default: 30
+
+**Response**: JSON object with course creation confirmation
+
+**Example**: `/api/generate_course/YOUR_API_KEY?courseId=CS450&numStudents=25`
+
+**Sample Response**:
+
+```json
+{
+  "message": "Course and students generated successfully",
+  "courseId": "CS450"
+}
+```
 
 #### Get Course Header
 
+**Endpoint**: `/api/header/<apikey>/<courseId>`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+- `courseId`: Course identifier
+
+**Response**: JSON object with course configuration
+
+**Example**: `/api/header/YOUR_API_KEY/CS450`
+
+**Sample Response**:
+
+```json
+{
+  "courseId": "CS450",
+  "weightage": {
+    "Homework": 40,
+    "Discussions": 30,
+    "FinalExam": 30
+  },
+  "components": {
+    "Homework": 3,
+    "Discussions": 2,
+    "FinalExam": 1
+  }
+}
+```
+
 #### Get Gradebook
+
+**Endpoint**: `/api/gradebook/<apikey>/<courseId>`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+- `courseId`: Course identifier
+
+**Query Parameters**:
+
+- `format`: Output format ('json', 'html', 'download') - default: 'json'
+
+**Response**:
+
+- JSON array with student data
+- HTML page with formatted gradebook
+- Downloadable HTML file
+
+**Example**: `/api/gradebook/YOUR_API_KEY/CS450?format=json`
+
+**Sample Response**:
+
+```json
+[
+  {
+    "courseId": "CS450",
+    "studentId": 1,
+    "name": "Jane Smith",
+    "components": [
+      {
+        "type": "Homework",
+        "component": "Homework 1",
+        "marks": 92,
+        "totalMarks": 100
+      },
+      {
+        "type": "Homework",
+        "component": "Homework 2",
+        "marks": 88,
+        "totalMarks": 100
+      },
+      {
+        "type": "Homework",
+        "component": "Homework 3",
+        "marks": 95,
+        "totalMarks": 100
+      },
+      {
+        "type": "Discussions",
+        "component": "Discussions 1",
+        "marks": 90,
+        "totalMarks": 100
+      },
+      {
+        "type": "Discussions",
+        "component": "Discussions 2",
+        "marks": 85,
+        "totalMarks": 100
+      },
+      {
+        "type": "FinalExam",
+        "component": "FinalExam 1",
+        "marks": 87,
+        "totalMarks": 100
+      }
+    ],
+    "weightedPercentages": {
+      "Homework": 36.67,
+      "Discussions": 26.25,
+      "FinalExam": 26.1
+    },
+    "finalPercentage": 89.02,
+    "finalGrade": "B"
+  }
+  // ... additional students
+]
+```
+
+**HTML Format Example**: `/api/gradebook/YOUR_API_KEY/CS450?format=html`
+
+README structure TODO
 
 ## Authentication
 
