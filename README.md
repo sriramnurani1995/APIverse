@@ -119,13 +119,69 @@ src/
     └── paragraph_processing.py # Text generation utilities
 ```
 
-Readme structure TODO
 
 ## API Reference
 
 ### Placeholder Image API
 
+Generate placeholder images with custom dimensions.
+
+**Endpoint**: `/api/<category>/<apikey>/<name>/<width>/<height>/`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `category`: Image category (e.g., 'cats', 'nature')
+- `apikey`: Your API key
+- `name`: Specific image name or 'random'
+- `width`: Image width in pixels
+- `height`: Image height in pixels
+
+**Response**: JPEG image
+
+**Example**: `/api/cats/YOUR_API_KEY/random/300/200/`
+
+**Sample Response**:
+Returns a JPEG image file of a cat with dimensions 300x200 pixels.
+
 ### Paragraph API
+
+Generate placeholder text paragraphs.
+
+**Endpoint**: `/api/paragraphs/<apikey>`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+
+**Query Parameters**:
+
+- `type`: Text type ('lorem', 'business', 'tech', 'hipster', 'cats', 'pup') - default: 'lorem'
+- `length`: Paragraph length ('short', 'medium', 'long') - default: 'medium'
+- `count`: Number of paragraphs - default: 3
+- `format`: Output format ('json', 'html', 'paragraph_download') - default: 'json'
+
+**Response**:
+
+- JSON object with paragraphs array
+- HTML page with formatted paragraphs
+- Downloadable HTML file
+
+**Example**: `/api/paragraphs/YOUR_API_KEY?type=business&length=short&count=2&format=json`
+
+**Sample Response**:
+
+```json
+{
+  "paragraphs": [
+    "Leverage key deliverables. Synergize core competencies. Maximize ROI. Empower team collaboration. Scale vertical markets drive innovation optimize operational efficiencies.",
+    "Engage stakeholders. Pivot strategy disrupt traditional paradigms. Drive innovation. Optimize operational efficiencies. Leverage key deliverables synergize core competencies."
+  ]
+}
+```
 
 ### Weather API
 
