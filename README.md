@@ -119,7 +119,6 @@ src/
     └── paragraph_processing.py # Text generation utilities
 ```
 
-
 ## API Reference
 
 ### Placeholder Image API
@@ -182,7 +181,6 @@ Generate placeholder text paragraphs.
   ]
 }
 ```
-
 
 ### Weather API
 
@@ -427,34 +425,188 @@ Generate and manage course gradebooks.
 
 **HTML Format Example**: `/api/gradebook/YOUR_API_KEY/CS450?format=html`
 
-README structure TODO
-
 ## Authentication
 
 ### User Registration
 
+1. Visit `/signup`
+2. Enter your full name, PDX email address, and password
+3. Upon successful registration, you'll be redirected to the dashboard
+
 ### API Key Management
 
+1. Log in to your account at `/login`
+2. Navigate to the dashboard
+3. Click "Generate" to create a new API key
+4. Copy the key within 60 seconds (keys are hidden after this time)
+5. Use the key in your API requests as shown in the API Reference
+6. Revoke keys that are no longer needed
+
 ### API Key Security
+
+- Keys are stored as salted SHA-256 hashes
+- Keys expire after 30 days
+- Keys can be revoked at any time
+- Access is restricted to PDX email addresses
 
 ## Installation & Setup
 
 ### Prerequisites
 
+- Python 3.8+
+- Google Cloud SDK (for Datastore)
+- Google Cloud Datastore credentials
+
 ### Environment Setup
 
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/your-org/apiverse.git
+   cd apiverse
+   ```
+
+2. Create and activate a virtual environment:
+
+   ```
+   python -m venv env
+   source env/bin/activate  # On Windows: env\Scripts\activate
+   ```
+
+3. Install dependencies:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. Set up environment variables:
+
+   ```
+   export GOOGLE_APPLICATION_CREDENTIALS="path/to/your/credentials.json"
+   export FASTAPI_URL="http://localhost:8000"  # For local development
+   ```
+
+5. Initialize the Datastore emulator (for local development):
+   ```
+   gcloud beta emulators datastore start --no-store-on-disk
+   ```
+
 ## Local Development
+
+To run the application locally:
+
+```
+python src/run.py
+```
+
+This will start both the Flask application (on port 5000) and the FastAPI service (on port 8000).
+
+Access the web interface at http://localhost:5000
 
 ## Deployment
 
 ### Google Cloud Platform (GCP)
 
+1. Build the Docker container:
+
+   ```
+   docker build -t apiverse .
+   ```
+
+2. Push to Google Container Registry:
+
+   ```
+   docker tag apiverse gcr.io/[PROJECT_ID]/apiverse
+   docker push gcr.io/[PROJECT_ID]/apiverse
+   ```
+
+3. Deploy to Cloud Run:
+   ```
+   gcloud run deploy apiverse --image gcr.io/[PROJECT_ID]/apiverse --platform managed
+   ```
+
 ## Security Considerations
+
+- API keys are one-way hashed and cannot be recovered if lost
+- User passwords are stored using secure hashing (werkzeug.security)
+- Keys expire automatically after 30 days
+- PDX email restriction prevents unauthorized access
+- API endpoints validate key ownership before processing
+- Downloaded files are automatically cleaned up after 1 hour
 
 ## Contributing
 
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
 ## Example API Usage
+
+Here are code examples of how to use the APIs in different programming languages:
 
 ### Python
 
+```python
+import requests
+
+# Your API key
+API_KEY = "your_api_key_here"
+
+# Example: Get weather data for a specific date
+response = requests.get(f"https://apiverse.example.com/api/weather/date/{API_KEY}?date=2023-06-15")
+weather_data = response.json()
+print(f"Temperature on June 15: {weather_data['temperature']}°C")
+
+# Example: Generate placeholder paragraphs
+response = requests.get(
+    f"https://apiverse.example.com/api/paragraphs/{API_KEY}",
+    params={"type": "tech", "count": 3, "length": "short"}
+)
+paragraphs = response.json()["paragraphs"]
+for i, paragraph in enumerate(paragraphs, 1):
+    print(f"Paragraph {i}: {paragraph[:50]}...")
+```
+
 ### JavaScript
+
+```javascript
+// Your API key
+const API_KEY = "your_api_key_here";
+
+// Example: Get gradebook data
+fetch(`https://apiverse.example.com/api/gradebook/${API_KEY}/CS450`)
+  .then((response) => response.json())
+  .then((students) => {
+    console.log(`Number of students: ${students.length}`);
+
+    // Calculate class average
+    const classAverage =
+      students.reduce((sum, student) => sum + student.finalPercentage, 0) /
+      students.length;
+    console.log(`Class average: ${classAverage.toFixed(2)}%`);
+  })
+  .catch((error) => console.error("Error fetching gradebook:", error));
+
+// Example: Generate course with custom weights
+const courseData = {
+  courseId: "CS401",
+  numStudents: 30,
+  homeworkWeight: 50,
+  discussionWeight: 20,
+  examWeight: 30,
+};
+
+fetch(`https://apiverse.example.com/api/generate_course/${API_KEY}`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(courseData),
+})
+  .then((response) => response.json())
+  .then((data) => console.log(data.message))
+  .catch((error) => console.error("Error generating course:", error));
+```
