@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 550">
+  <!-- Background -->
+  <rect width="800" height="550" fill="#f8f9fa" rx="10" ry="10"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">APIverse Architecture</text>
+  
+  <!-- Client Layer -->
+  <rect x="50" y="80" width="700" height="60" rx="5" ry="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="400" y="120" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">User Browser</text>
+  
+  <!-- Arrows from clients to gateway -->
+  <path d="M400 140 L400 180" stroke="#1565c0" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="430" y="165" font-family="Arial" font-size="12">HTTP Requests</text>
+  
+  <!-- Flask Gateway Layer -->
+  <rect x="50" y="180" width="700" height="100" rx="5" ry="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="400" y="205" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">Flask Application (Gateway)</text>
+  <text x="400" y="230" font-family="Arial" font-size="14" text-anchor="middle">Authentication, API Key Validation, Request Routing</text>
+  
+  <!-- Arrows from gateway to services -->
+  <path d="M400 280 L400 320" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowhead)"/>
+ 
+  <text x="420" y="305" font-family="Arial" font-size="12">Internal API Calls</text>
+  
+  <!-- FastAPI Service Layer -->
+  <rect x="50" y="320" width="700" height="100" rx="5" ry="5" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="400" y="345" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">FastAPI Service Layer</text>
+  <text x="400" y="370" font-family="Arial" font-size="14" text-anchor="middle">API Implementation, Data Processing, Content Generation</text>
+  
+  <!-- Arrows from services to database -->
+  <path d="M400 420 L400 460" stroke="#e65100" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="430" y="445" font-family="Arial" font-size="12">Data Operations</text>
+  
+  <!-- Database Layer -->
+  <rect x="150" y="460" width="500" height="80" rx="5" ry="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="400" y="485" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">Google Cloud Datastore</text>
+  
+  <!-- Component boxes inside layers -->
+  <!-- Flask Components -->
+  <rect x="70" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="120" y="260" font-family="Arial" font-size="12" text-anchor="middle">User Auth</text>
+  
+  <rect x="190" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="240" y="260" font-family="Arial" font-size="12" text-anchor="middle">API Key Mgmt</text>
+  
+  <rect x="310" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="360" y="260" font-family="Arial" font-size="12" text-anchor="middle">Request Router</text>
+  
+  <rect x="430" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="480" y="260" font-family="Arial" font-size="12" text-anchor="middle">Web Interface</text>
+  
+  <rect x="550" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="600" y="260" font-family="Arial" font-size="12" text-anchor="middle">Session Mgmt</text>
+  
+  <!-- FastAPI Components -->
+  <rect x="60" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="110" y="400" font-family="Arial" font-size="12" text-anchor="middle">Weather API</text>
+  
+  <rect x="180" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="230" y="400" font-family="Arial" font-size="12" text-anchor="middle">Placeholder API</text>
+  
+  <rect x="300" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="350" y="400" font-family="Arial" font-size="12" text-anchor="middle">Gradebook API</text>
+  
+  <rect x="420" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="470" y="400" font-family="Arial" font-size="12" text-anchor="middle">Star Wars API</text>
+  
+  <rect x="540" y="380" width="160" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="620" y="400" font-family="Arial" font-size="12" text-anchor="middle">File Generation/Caching</text>
+  
+  <!-- Database Components -->
+  <rect x="170" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
+  <text x="210" y="515" font-family="Arial" font-size="12" text-anchor="middle">Users</text>
+  
+  <rect x="270" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
+  <text x="310" y="515" font-family="Arial" font-size="12" text-anchor="middle">API Keys</text>
+  
+  <rect x="370" y="495" width="110" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
+  <text x="425" y="515" font-family="Arial" font-size="12" text-anchor="middle">Course Data</text>
+  
+  <rect x="500" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
+  <text x="540" y="515" font-family="Arial" font-size="12" text-anchor="middle">Weather</text>
+  
+  <!-- Arrow definitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>
