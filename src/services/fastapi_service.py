@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, HTTPException,Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 import os
 from utils.image_processing import resize_image
-from utils.paragraph_processing import generate_paragraphs
+from utils.paragraph_processing import generate_manual_paragraphs, generate_llm_paragraph
 from utils.file_utils import get_downloadable_file_response, save_file
 from utils.html_utils import generate_html_page, generate_download_page
 from model.model_datastore import model
@@ -67,13 +67,18 @@ def get_placeholder_image(category: str, name: str, width: int, height: int):
 @app.get("/paragraphs")
 def get_paragraphs(
     type: str = Query("lorem"),
+    topic: str = Query("random"),
+    tone: str = Query("neutral"),
     length: str = Query("medium"),
     count: int = Query(3),
-    format: str = Query("json")
+    format: str = Query("json", regex="^(json|html|paragraph_download)$")  # Format selection
 ):
     """FastAPI Endpoint for Placeholder Paragraphs in JSON, HTML, or Downloadable HTML."""
-    paragraphs = generate_paragraphs(type, length, count)
 
+    if type == "llm":
+        paragraphs = [generate_llm_paragraph(topic, tone, length) for _ in range(count)]
+    else:
+        paragraphs = generate_manual_paragraphs(type, length, count)
 
     paragraph_styles = {
         ".p1": "text-align: left; font-size: 18px; line-height: 1.6; margin-bottom: 16px; padding: 10px; background: #f8f8f8; border-left: 5px solid #007BFF; border-radius: 4px;",
@@ -91,10 +96,11 @@ def get_paragraphs(
         return HTMLResponse(content=generate_html_page("Generated Paragraphs", html_content, paragraph_styles))
 
     if format == "paragraph_download":
-    
-        file_path = save_file(content=generate_html_page("Generated Paragraphs", html_content, paragraph_styles),file_extension="html", folder="static/downloads")
+        file_path = save_file(content=generate_html_page("Generated Paragraphs", html_content, paragraph_styles), file_extension="html", folder="static/downloads")
 
         return HTMLResponse(content=generate_download_page("Your Generated Paragraphs HTML", file_path, "generated_paragraphs.html", paragraph_styles))
+    
+    raise HTTPException(status_code=400, detail="Invalid format specified")
 
 
 @app.get("/download_file")
