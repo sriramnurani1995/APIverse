@@ -6,7 +6,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel
 
 # Vertex AI Configuration
-PROJECT_ID = "cloud-varun-varunch"
+PROJECT_ID = "softwareengproject-450500"
 LOCATION = "us-central1"  # Update based on your region
 MODEL_NAME = "gemini-1.5-flash-002"  # Using Gemini model
 
