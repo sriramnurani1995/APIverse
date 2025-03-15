@@ -72,28 +72,26 @@ def placeholder_image(category, apikey, name, width, height):
     
     return flask.jsonify({"error": "Unexpected error from image service"}), response.status_code
 
-
 @app.route("/api/paragraphs/<apikey>", methods=["GET"])
 def get_paragraphs(apikey):
     """Flask route that validates API key & forwards request to FastAPI"""
     
     # Validate API Key
     error_response = validate_api_key_request(apikey)
+    
     if error_response:
         return error_response  # Unauthorized if API Key is invalid
 
-    # Extract Query Parameters
-    paragraph_type = request.args.get("type", "lorem")
-    length = request.args.get("length", "medium")
-    count = request.args.get("count", 3, type=int)
-    format_type = request.args.get("format", "json")  # Optional: json/html
-    
-    # Forward request to FastAPI (without API key)
-    fastapi_url = f"{FASTAPI_URL}/paragraphs?type={paragraph_type}&length={length}&count={count}&format={format_type}"
-    response = requests.get(fastapi_url)
+    # Extract parameters from URL query and forward them to FastAPI
+    query_params = request.query_string.decode("utf-8")
+    fastapi_url = f"{FASTAPI_URL}/paragraphs?{query_params}"
 
-    # Return response as is (handles JSON & HTML formatting)
-    return response.content, response.status_code, {'Content-Type': response.headers.get('Content-Type', 'application/json')}
+    try:
+        response = requests.get(fastapi_url)
+        return response.content, response.status_code, response.headers.items()
+    except requests.RequestException as e:
+        print(f"Error forwarding request to FastAPI: {e}")
+        return jsonify({"error": "Failed to fetch paragraphs from FastAPI"}), 500
 
 @app.route('/download_file', methods=['GET'])
 def download_file():
