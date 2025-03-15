@@ -253,3 +253,96 @@ class model:
         query = self.client.query(kind="Student")
         query.add_filter("courseId", "=", courseId)
         return list(query.fetch())
+
+
+    def store_starwars_entity(self, kind, data):
+        """Store a Star Wars entity in Datastore."""
+        key = self.client.key(kind)
+        entity = datastore.Entity(key)
+        entity.update(data)
+        self.client.put(entity)
+        return entity
+
+    def get_starwars_entity(self, kind, entity_id):
+        """Get a specific Star Wars entity by ID."""
+        key = self.client.key(kind, int(entity_id))
+        entity = self.client.get(key)
+        return entity
+
+    def get_starwars_entities(self, kind, limit=10, offset=0, search=None):
+        """Get multiple Star Wars entities with pagination and search."""
+        query = self.client.query(kind=kind)
+        
+        if search:
+            # First try exact match on 'name' field
+            query.add_filter("name", "=", search)
+            results = list(query.fetch(limit=limit, offset=offset))
+            
+            # If no results, try approximate match
+            if not results:
+                all_entities = list(self.client.query(kind=kind).fetch())
+                results = []
+                
+                for entity in all_entities:
+                    name = entity.get("name", entity.get("title", ""))
+                    if search.lower() in name.lower():
+                        results.append(entity)
+                
+                # Apply pagination manually
+                total = len(results)
+                results = results[offset:offset+limit]
+            else:
+                # Get total count for pagination info
+                total_query = self.client.query(kind=kind)
+                total_query.add_filter("name", "=", search)
+                total = len(list(total_query.fetch()))
+        else:
+            # Get total count for pagination info
+            total_query = self.client.query(kind=kind)
+            total = len(list(total_query.fetch()))
+            
+            # Get paginated results
+            query_iter = query.fetch(limit=limit, offset=offset)
+            results = list(query_iter)
+        
+        return {
+            "count": total,
+            "results": results
+        }
+
+    def import_starwars_data(self, data, kind):
+        """Import Star Wars data from JSON."""
+        # Clear existing data for this kind
+        query = self.client.query(kind=kind)
+        keys = [entity.key for entity in query.fetch()]
+        if keys:
+            self.client.delete_multi(keys)
+        
+        # Import new data
+        for item in data:
+            if "fields" in item:
+                # Process data from the JSON files
+                fields = item["fields"].copy()
+                if "pk" in item:
+                    fields["id"] = item["pk"]
+                
+                # Process transport data for vehicles and starships
+                if kind in ["Starship", "Vehicle"] and "transport_id" in fields:
+                    transport_id = fields["transport_id"]
+                    transport_key = self.client.key("Transport", int(transport_id))
+                    transport = self.client.get(transport_key)
+                    if transport:
+                        # Merge transport data with vehicle/starship data
+                        for key, value in transport.items():
+                            if key not in fields and key != "id":
+                                fields[key] = value
+                
+                # Create entity with specified ID
+                if "id" in fields:
+                    entity_id = fields.pop("id")
+                    key = self.client.key(kind, int(entity_id))
+                    entity = datastore.Entity(key=key)
+                    entity.update(fields)
+                    self.client.put(entity)
+                else:
+                    self.store_starwars_entity(kind, fields)

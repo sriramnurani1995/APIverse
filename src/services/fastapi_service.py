@@ -12,6 +12,12 @@ import asyncio
 from services.weather_service import get_weather_for_date, get_weather_for_month
 from datetime import datetime
 from services.gradebook_service import create_course, get_course_header, get_students_by_course
+from services.starwars_service import (
+    get_films, get_people, get_planets, get_species, get_starships, get_vehicles,
+    get_film_by_id, get_person_by_id, get_planet_by_id, get_species_by_id, get_starship_by_id, get_vehicle_by_id, check_starwars_data_exists, import_all_starwars_data
+)
+from typing import Optional
+
 
 db = model()  
 
@@ -22,6 +28,14 @@ async def lifespan(app: FastAPI):
     db.create_image_mappings()
     print("Image mappings created successfully.")
 
+    # Check if Star Wars data exists, import if needed
+    if not check_starwars_data_exists():
+        print("Star Wars data not found. Importing data...")
+        import_all_starwars_data()
+        print("Star Wars data imported successfully.")
+    else:
+        print("Star Wars data already exists in database.")
+        
     # Start cleanup scheduler in the background
     task = asyncio.create_task(cleanup_scheduler())
 
@@ -213,3 +227,111 @@ def get_gradebook(courseId: str, format: str = "json"):
         return HTMLResponse(content=generate_download_page("Your Gradebook HTML", file_path, f"{courseId}_gradebook.html", gradebook_styles))
 
     return HTMLResponse(content=html_content)
+
+@app.get("/starwars/films",tags=["Star Wars API"])
+async def starwars_films(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars films with pagination and optional search."""
+    return await get_films(skip, limit, search, format)
+
+@app.get("/starwars/films/{film_id}",tags=["Star Wars API"])
+async def starwars_film_by_id(
+    film_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars film by ID."""
+    return await get_film_by_id(film_id, format)
+
+@app.get("/starwars/people",tags=["Star Wars API"])
+async def starwars_people(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars people with pagination and optional search."""
+    return await get_people(skip, limit, search, format)
+
+@app.get("/starwars/people/{person_id}",tags=["Star Wars API"])
+async def starwars_person_by_id(
+    person_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars person by ID."""
+    return get_person_by_id(person_id, format)
+
+@app.get("/starwars/planets",tags=["Star Wars API"])
+async def starwars_planets(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars planets with pagination and optional search."""
+    return await get_planets(skip, limit, search, format)
+
+@app.get("/starwars/planets/{planet_id}",tags=["Star Wars API"])
+async def starwars_planet_by_id(
+    planet_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars planet by ID."""
+    return await get_planet_by_id(planet_id, format)
+
+@app.get("/starwars/species",tags=["Star Wars API"])
+async def starwars_species(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars species with pagination and optional search."""
+    return await get_species(skip, limit, search, format)
+
+@app.get("/starwars/species/{species_id}",tags=["Star Wars API"])
+async def starwars_species_by_id(
+    species_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars species by ID."""
+    return await get_species_by_id(species_id, format)
+
+@app.get("/starwars/starships",tags=["Star Wars API"])
+async def starwars_starships(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars starships with pagination and optional search."""
+    return await get_starships(skip, limit, search, format)
+
+@app.get("/starwars/starships/{starship_id}",tags=["Star Wars API"])
+async def starwars_starship_by_id(
+    starship_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars starship by ID."""
+    return await get_starship_by_id(starship_id, format)
+
+@app.get("/starwars/vehicles",tags=["Star Wars API"])
+async def starwars_vehicles(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    format: str = Query("json")
+):
+    """Get Star Wars vehicles with pagination and optional search."""
+    return await get_vehicles(skip, limit, search, format)
+
+@app.get("/starwars/vehicles/{vehicle_id}",tags=["Star Wars API"])
+async def starwars_vehicle_by_id(
+    vehicle_id: int,
+    format: str = Query("json")
+):
+    """Get a specific Star Wars vehicle by ID."""
+    return await get_vehicle_by_id(vehicle_id, format)
