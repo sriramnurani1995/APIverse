@@ -208,6 +208,159 @@ def get_gradebook(apikey, courseId):
 
     return flask.Response(response.content, response.status_code, response.headers.items())
 
+
+@app.route("/api/starwars/films/<apikey>", methods=["GET"])
+def get_starwars_films(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/films"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api/starwars/people/<apikey>", methods=["GET"])
+def get_starwars_people(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/people"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api/starwars/planets/<apikey>", methods=["GET"])
+def get_starwars_planets(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/planets"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api/starwars/species/<apikey>", methods=["GET"])
+def get_starwars_species(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/species"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api/starwars/starships/<apikey>", methods=["GET"])
+def get_starwars_starships(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/starships"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api/starwars/vehicles/<apikey>", methods=["GET"])
+def get_starwars_vehicles(apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    skip = request.args.get("skip", 0, type=int)
+    limit = request.args.get("limit", 10, type=int)
+    search = request.args.get("search", None)
+    format_type = request.args.get("format", "json")
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/vehicles"
+    params = {
+        "skip": skip,
+        "limit": limit,
+        "search": search,
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
+
+# Additional endpoint to get a specific entity by ID
+@app.route("/api/starwars/<string:entity_type>/<int:entity_id>/<apikey>", methods=["GET"])
+def get_starwars_entity(entity_type, entity_id, apikey):
+    error_response = validate_api_key_request(apikey)
+    if error_response:
+        return error_response
+    
+    format_type = request.args.get("format", "json")
+    
+    entity_type_lower = entity_type.lower()
+    if entity_type_lower not in ['films', 'people', 'planets', 'species', 'starships', 'vehicles']:
+        return flask.jsonify({"error": f"Invalid entity type: {entity_type}"}), 400
+    
+    fastapi_url = f"{FASTAPI_URL}/starwars/{entity_type_lower}/{entity_id}"
+    params = {
+        "format": format_type
+    }
+    response = requests.get(fastapi_url, params=params)
+    
+    return flask.Response(response.content, response.status_code, response.headers.items())
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
     
