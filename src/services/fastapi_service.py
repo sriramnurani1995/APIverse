@@ -51,9 +51,6 @@ async def cleanup_scheduler():
 
 app = FastAPI(lifespan=lifespan)  
 
-
-
-
 @app.get("/{category}/{name}/{width}/{height}/")
 def get_placeholder_image(category: str, name: str, width: int, height: int):
     image_path = db.get_image_path(category, name)
@@ -74,7 +71,6 @@ def get_paragraphs(
     format: str = Query("json", regex="^(json|html|paragraph_download)$")  # Format selection
 ):
     """FastAPI Endpoint for Placeholder Paragraphs in JSON, HTML, or Downloadable HTML."""
-
     if type == "llm":
         paragraphs = [generate_llm_paragraph(topic, tone, length) for _ in range(count)]
     else:

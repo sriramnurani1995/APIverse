@@ -19,6 +19,7 @@ def generate_paragraphs(type_param: str, length: str, count: int, topic=None, to
     
     # Manual generation (Predefined Text)
     return generate_manual_paragraphs(type_param, length, count)
+
 def generate_manual_paragraphs(type: str, length: str, count: int):
     """Generates randomized placeholder paragraphs based on type, length, and count."""
     

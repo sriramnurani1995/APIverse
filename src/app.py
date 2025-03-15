@@ -78,6 +78,7 @@ def get_paragraphs(apikey):
     
     # Validate API Key
     error_response = validate_api_key_request(apikey)
+    
     if error_response:
         return error_response  # Unauthorized if API Key is invalid
 
