@@ -14,6 +14,9 @@ import os
 app = flask.Flask(__name__, template_folder='static/templates')       
 app.secret_key = os.urandom(24)
 
+# Cache OpenAPI Schema
+openapi_schema = None
+
 load_dotenv()
 FASTAPI_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
 
@@ -357,7 +360,124 @@ def get_starwars_entity(entity_type, entity_id, apikey):
         "format": format_type
     }
     response = requests.get(fastapi_url, params=params)
-    
+
+# ============= Swagger UI Routes ================
+@app.route("/docs")
+def api_docs():
+    """Proxy to FastAPI Swagger UI without requiring authentication."""
+    response = requests.get(f"{FASTAPI_URL}/docs", stream=True)
+    return flask.Response(
+        response.content, 
+        status=response.status_code, 
+        content_type=response.headers.get('Content-Type')
+    )
+
+@app.route("/redoc")
+def api_redoc():
+    """Proxy to FastAPI ReDoc UI without requiring authentication."""
+    response = requests.get(f"{FASTAPI_URL}/redoc", stream=True)
+    return flask.Response(
+        response.content, 
+        status=response.status_code, 
+        content_type=response.headers.get('Content-Type')
+    )
+
+@app.route("/openapi.json")
+def api_openapi_schema():
+    """Serve the OpenAPI schema with modifications for Swagger UI."""
+    global openapi_schema
+    if openapi_schema is None:
+        response = requests.get(f"{FASTAPI_URL}/openapi.json")
+        if response.status_code == 200:
+            schema = response.json()
+            
+            # Set servers to use relative URL
+            schema["servers"] = [{"url": "http://localhost:5000"}]
+            
+            # Add a note about test API key
+            if schema.get("info"):
+                if "description" in schema["info"]:
+                    note = "\n\n## Testing Information\n\nThe Swagger UI automatically uses a test API key for the 'Try it out' feature."
+                    schema["info"]["description"] = schema["info"]["description"] + note
+            
+            # For each path, replace path parameters with the test key
+            modified_paths = {}
+            for path, methods in schema["paths"].items():
+                # For paths with FastAPI backend like /api/paragraphs, etc.
+                if "{category}" in path:
+                    new_path = path.replace("/{category}/{name}/{width}/{height}/", 
+                                           "/api/{category}/6t3WiuqPdkQ2LV7D/{name}/{width}/{height}/")
+                    modified_paths[new_path] = methods
+                elif path == "/paragraphs":
+                    new_path = "/api/paragraphs/6t3WiuqPdkQ2LV7D"
+                    modified_paths[new_path] = methods
+                elif path == "/weather/date/":
+                    new_path = "/api/weather/date/6t3WiuqPdkQ2LV7D"
+                    modified_paths[new_path] = methods
+                elif path == "/weather/month/":
+                    new_path = "/api/weather/month/6t3WiuqPdkQ2LV7D"
+                    modified_paths[new_path] = methods
+                elif path.startswith("/api/"):
+                    # For paths like /api/generate_course, /api/header/{courseId}, etc.
+                    # Check if there's a path parameter right after /api/
+                    if "{" in path:
+                        # Split into parts and insert test_key before the parameter
+                        parts = path.split("/")
+                        new_parts = [p for p in parts if p]  # Remove empty strings
+                        index = 1  # After "api"
+                        new_parts.insert(index + 1, "6t3WiuqPdkQ2LV7D")
+                        new_path = "/" + "/".join(new_parts)
+                    else:
+                        # Just append /test_key to the end
+                        new_path = path + "/6t3WiuqPdkQ2LV7D"
+                    modified_paths[new_path] = methods
+                # Add specific handling for Star Wars API
+                elif path.startswith("/starwars/"):
+                    if "/{" in path:  # Handle single entity endpoint
+                        entity_type = path.split("/")[2]
+                        if "films" in entity_type or "people" in entity_type or "planets" in entity_type or \
+                           "species" in entity_type or "starships" in entity_type or "vehicles" in entity_type:
+                            if path.count("{") == 1:  # Single parameter (e.g. /starwars/films/{film_id})
+                                new_path = path.replace(f"/starwars/{entity_type}/{{", f"/api/starwars/{entity_type}/{{")
+                                new_path = new_path.replace("}}", "}/6t3WiuqPdkQ2LV7D}")
+                                modified_paths[new_path] = methods
+                    else:  # Handle list endpoint
+                        new_path = f"/api{path}/6t3WiuqPdkQ2LV7D"
+                        modified_paths[new_path] = methods
+                else:
+                    # Keep other paths unchanged
+                    modified_paths[path] = methods
+            
+            # Replace the paths with modified ones
+            schema["paths"] = modified_paths
+            
+            openapi_schema = schema
+        else:
+            return jsonify({"error": "Could not load OpenAPI schema"}), 500
+            
+    return jsonify(openapi_schema)
+
+# Handle static files for Swagger UI and ReDoc
+@app.route("/docs/<path:path>")
+def api_swagger_static(path):
+    """Proxy to Swagger UI static files."""
+    response = requests.get(f"{FASTAPI_URL}/docs/{path}", stream=True)
+    return flask.Response(
+        response.content, 
+        status=response.status_code, 
+        content_type=response.headers.get('Content-Type')
+    )
+
+@app.route("/redoc/<path:path>")
+def api_redoc_static(path):
+    """Proxy to ReDoc static files."""
+    response = requests.get(f"{FASTAPI_URL}/redoc/{path}", stream=True)
+    return flask.Response(
+        response.content, 
+        status=response.status_code, 
+        content_type=response.headers.get('Content-Type')
+    )
+
     return flask.Response(response.content, response.status_code, response.headers.items())
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)

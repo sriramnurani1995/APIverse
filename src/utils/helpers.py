@@ -23,9 +23,13 @@ def get_category_directories():
 
 def validate_api_key_request(apikey):
     """Validates if an API key is provided and checks its validity."""
-    from utils.api_key_generation import validate_api_key
+    from utils.api_key_generation import validate_api_key, is_test_api_key
     if not apikey:
         return flask.jsonify({"error": "Missing API key"}), 400
+    
+    # Allow the special test key
+    if is_test_api_key(apikey):
+        return None
     
     if not validate_api_key(apikey):
         return flask.jsonify({"error": "Unauthorized. Invalid API key"}), 401

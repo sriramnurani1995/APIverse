@@ -886,6 +886,74 @@ async def starwars_vehicle_by_id(
     """
     return await get_vehicle_by_id(vehicle_id, format)
 
+@app.get(
+    "/starwars/films/{film_id}",
+    tags=["Star Wars API"],
+    summary="Get a specific Star Wars film",
+    responses={
+        200: {"description": "Star Wars film details"},
+        200: {"content": {"text/html": {"example": "<html>...</html>"}}, "description": "HTML formatted film details"},
+        404: {"description": "Film not found"}
+    }
+)
+async def starwars_film_by_id(
+    film_id: int = Path(..., description="The ID of the film to retrieve"),
+    format: str = Query("json", description="Output format", 
+                        examples={"json": {"value": "json"},
+                                 "html": {"value": "html"}, 
+                                 "download": {"value": "download"}})
+):
+    """
+    Get details for a specific Star Wars film by ID.
+    
+    This endpoint returns detailed information about a single Star Wars film,
+    including title, characters, planets, and other related data.
+    
+    **Note:** In the actual API, this endpoint is called with an API key in the path:
+    `/api/starwars/films/{film_id}/{apikey}?format=json`
+    """
+
+    return await get_film_by_id(film_id, format)
+
+async def starwars_planet_by_id(
+    planet_id: int = Path(..., description="The ID of the planet to retrieve"),
+    format: str = Query("json", description="Output format", 
+                        examples={"json": {"value": "json"},
+                                  "html": {"value": "html"}, 
+                                  "download": {"value": "download"}})
+):
+    """
+    Get details for a specific Star Wars planet by ID.
+    
+    This endpoint returns detailed information about a single Star Wars planet,
+    including name, climate, terrain, population, and other related data.
+    
+    **Note:** In the actual API, this endpoint is called with an API key in the path:
+    `/api/starwars/planets/{planet_id}/{apikey}?format=json`
+    """
+
+    return await get_planet_by_id(planet_id, format)
+
+async def starwars_starship_by_id(
+    starship_id: int = Path(..., description="The ID of the starship to retrieve"),
+    format: str = Query("json", description="Output format", 
+                        examples={"json": {"value": "json"},
+                                  "html": {"value": "html"}, 
+                                  "download": {"value": "download"}})
+):
+    """
+    Get details for a specific Star Wars starship by ID.
+    
+    This endpoint returns detailed information about a single Star Wars starship,
+    including name, model, manufacturer, cost, and other related data.
+    
+    **Note:** In the actual API, this endpoint is called with an API key in the path:
+    `/api/starwars/starships/{starship_id}/{apikey}?format=json`
+    """
+ 
+    return await get_starship_by_id(starship_id, format)
+
+
 # Static files and custom Swagger UI
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

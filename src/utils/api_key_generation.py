@@ -108,3 +108,7 @@ def revoke_api_key(user_email, api_key_id):
     except Exception as e:
         print(f"Error revoking API key: {e}")
         return False
+
+def is_test_api_key(apikey):
+    """Check if this is the special test API key for Swagger UI."""
+    return apikey == "6t3WiuqPdkQ2LV7D"
