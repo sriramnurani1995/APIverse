@@ -1,0 +1,4 @@
+.swagger-ui .curl-command,
+.swagger-ui .request-url {
+  display: none !important;
+}
