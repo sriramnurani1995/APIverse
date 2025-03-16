@@ -7,6 +7,14 @@ from app.index import Index
 from app.login import Login
 from app.logout import Logout
 from app.signup import Signup
+from app.reset_request import ResetRequest
+from app.reset_password import ResetPassword
+from app.verify_otp import VerifyOTP
+from app.login import Login
+from app.logout import Logout
+from auth.login import OAuthLogin
+from auth.callback import Callback
+from auth.logout import OAuthLogout
 from flask import jsonify,request
 from dotenv import load_dotenv 
 
@@ -39,6 +47,14 @@ app.add_url_rule('/dashboard',
 app.add_url_rule('/logout',
                  view_func=Logout.as_view('logout'),
                  methods=["GET"])
+
+# Register OAuth routes from auth/
+app.add_url_rule('/oauth_login', view_func=OAuthLogin.as_view('oauth_login'))
+app.add_url_rule('/callback', view_func=Callback.as_view('callback'))
+app.add_url_rule('/oauth_logout', view_func=OAuthLogout.as_view('oauth_logout'))
+app.add_url_rule('/reset_request', view_func=ResetRequest.as_view('reset_request'))
+app.add_url_rule('/verify_otp', view_func=VerifyOTP.as_view('verify_otp'))
+app.add_url_rule('/reset_password', view_func=ResetPassword.as_view('reset_password'))
 
 @app.route("/hello/<apikey>/", methods=["GET"])
 def hello_world(apikey):

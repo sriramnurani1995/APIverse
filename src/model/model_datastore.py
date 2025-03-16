@@ -19,26 +19,26 @@ class model:
         users = list(query.fetch())
         return users[0] if users else None
     # Insert user details
-    def insert_user(self, name, email, password):
+    def insert_user(self, name, email, password=None,is_oauth=False):
         """Insert user details into Datastore if not exists."""
         if self.get_user(email):
             return False  # User already exists
 
-        if not email.endswith("@pdx.edu"):
+        if not is_oauth and  email.endswith("@pdx.edu"):
             return False  # Restrict non-PDX users
 
         hashed_password = generate_password_hash(password)
 
-        key = self.client.key('User')
+        key = self.client.key("User")
         user = datastore.Entity(key)
         user.update({
             'name': name,
             'email': email,
-            'password': hashed_password
+            'password': hashed_password,  # OAuth users have None initially
+            'is_oauth': is_oauth
         })
         self.client.put(user)
         return True
-    
     # Verify user
     def verify_user(self, email, password):
         """Verify user login credentials."""
