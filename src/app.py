@@ -26,7 +26,7 @@ app.secret_key = os.urandom(24)
 openapi_schema = None
 
 load_dotenv()
-FASTAPI_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
+FASTAPI_URL = os.getenv("FASTAPI_URL", "http://127.0.0.1:8000")
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'),
@@ -408,7 +408,8 @@ def api_openapi_schema():
             schema = response.json()
             
             # Set servers to use relative URL
-            schema["servers"] = [{"url": "http://localhost:5000"}]
+            host_url = request.host_url.rstrip('/')
+            schema["servers"] = [{"url": host_url}]
             
             # Add a note about test API key
             if schema.get("info"):
@@ -496,5 +497,6 @@ def api_redoc_static(path):
 
     return flask.Response(response.content, response.status_code, response.headers.items())
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    port = int(os.getenv("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
     

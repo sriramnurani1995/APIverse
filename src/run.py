@@ -3,7 +3,7 @@ import time
 
 if __name__ == "__main__":
     fastapi_process = subprocess.Popen(["python", "-m", "uvicorn", "services.fastapi_service:app", "--host", "0.0.0.0", "--port", "8000"])
-    time.sleep(4)
+    time.sleep(10)
     flask_process = subprocess.Popen(["python", "app.py"])
 
     try:
@@ -12,3 +12,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         fastapi_process.terminate()
         flask_process.terminate()
+
+
