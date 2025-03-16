@@ -1,11 +1,7 @@
 {% extends "layout.html" %} {% block content %}
 
 <!-- Link External CSS File -->
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="{{ url_for('static', filename='styles.css') }}"
-/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
 
 <div class="login-container">
   <h2>Login</h2>
@@ -16,28 +12,28 @@
 
   <form method="post" class="login-form">
     <label for="email">Email</label>
-    <input
-      type="email"
-      name="email"
-      placeholder="PDX Email"
-      id="email"
-      required
-    />
+    <input type="email" name="email" placeholder="PDX Email" id="email" required />
     <label for="password">Password</label>
-    <input
-      type="password"
-      name="password"
-      placeholder="Password"
-      id="password"
-      required
-    />
+    <input type="password" name="password" placeholder="Password" id="password" required />
     <input type="submit" value="Login" class="btn-login" />
+  </form>
+
+
+  <!-- OR OAuth Login -->
+  <form action="{{ url_for('oauth_login') }}" method="get">
+    <button type="submit" class="btn-login google-btn">
+      Continue with Google
+    </button>
   </form>
 
   <p class="signup-text">
     Don't have an account?
     <a href="{{ url_for('signup') }}" class="signup-link">Sign Up</a>
   </p>
+  <p class="forgot-password">
+    <a href="{{ url_for('reset_request') }}" class="reset-link">Forgot Password?</a>
+  </p>
+
 </div>
 
 {% endblock %}
