@@ -15,7 +15,7 @@ from app.logout import Logout
 from auth.login import OAuthLogin
 from auth.callback import Callback
 from auth.logout import OAuthLogout
-from flask import jsonify,request
+from flask import jsonify,request,render_template, url_for
 from dotenv import load_dotenv 
 
 import os
@@ -496,6 +496,17 @@ def api_redoc_static(path):
     )
 
     return flask.Response(response.content, response.status_code, response.headers.items())
+
+@app.route("/api-docs/<api_type>")
+def api_documentation(api_type):
+    """Render API-specific documentation page."""
+    valid_types = ['images', 'paragraphs', 'weather', 'gradebook', 'starwars']
+    
+    if api_type not in valid_types:
+        return flask.redirect(url_for('index'))
+    
+    return render_template(f'api_docs/{api_type}.html')
+    
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
     app.run(host="0.0.0.0", port=port, debug=False)

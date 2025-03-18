@@ -1,0 +1,230 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="api-detail-container">
+  <h2 class="api-title">SWAPI Reimagined</h2>
+  <p class="api-description">Access Star Wars data including films, characters, planets, species, vehicles, and starships with enhanced functionality.</p>
+
+  <div class="endpoint-section">
+    <h3>Entity List Endpoints:</h3>
+    <div class="endpoint-url">/api/starwars/{entity_type}/{apikey}?skip={skip}&limit={limit}&search={search}&format={format}</div>
+    
+    <h3>Single Entity Endpoint:</h3>
+    <div class="endpoint-url">/api/starwars/{entity_type}/{entity_id}/{apikey}?format={format}</div>
+    
+    <h3>Parameters:</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Accepted Values</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="param-name">apikey</td>
+          <td>Your API key</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">entity_type</td>
+          <td>Type of Star Wars entity</td>
+          <td>films, people, planets, species, starships, vehicles</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">entity_id</td>
+          <td>ID of the specific entity</td>
+          <td>Integer (e.g., 1, 2, 3)</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">skip</td>
+          <td>Number of records to skip for pagination</td>
+          <td>0+</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td class="param-name">limit</td>
+          <td>Maximum number of records to return</td>
+          <td>1-100</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <td class="param-name">search</td>
+          <td>Search term to filter results</td>
+          <td>Any text</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">format</td>
+          <td>Output format</td>
+          <td>json, html, download</td>
+          <td>json</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="url-builder">
+    <h3>Build Your API URL:</h3>
+    <div class="form-group">
+      <label for="api-key">API Key:</label>
+      <input type="text" id="api-key" placeholder="Your API Key" required>
+    </div>
+    <div class="form-group">
+      <label for="entity-type">Entity Type:</label>
+      <select id="entity-type">
+        <option value="films">Films</option>
+        <option value="people" selected>People</option>
+        <option value="planets">Planets</option>
+        <option value="species">Species</option>
+        <option value="starships">Starships</option>
+        <option value="vehicles">Vehicles</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="endpoint-mode">Endpoint Mode:</label>
+      <select id="endpoint-mode">
+        <option value="list">List (with pagination)</option>
+        <option value="single">Single Entity (by ID)</option>
+      </select>
+    </div>
+    
+    <!-- List mode parameters -->
+    <div id="list-params">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="skip">Skip:</label>
+          <input type="number" id="skip" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label for="limit">Limit:</label>
+          <input type="number" id="limit" value="10" min="1" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="search">Search:</label>
+        <input type="text" id="search" placeholder="Optional search term">
+      </div>
+    </div>
+    
+    <!-- Single entity mode parameters -->
+    <div id="single-params" style="display:none;">
+      <div class="form-group">
+        <label for="entity-id">Entity ID:</label>
+        <input type="number" id="entity-id" value="1" min="1">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="format">Format:</label>
+      <select id="format">
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="download">Downloadable HTML</option>
+      </select>
+    </div>
+    
+    <div class="url-output">
+      <h4>Generated URL:</h4>
+      <div class="url-display">
+        <input type="text" id="generated-url" readonly>
+        <button onclick="copyUrl()" class="copy-btn">Copy</button>
+      </div>
+    </div>
+    
+    <button id="test-api" class="btn-test">Test API</button>
+    <div id="api-result" class="api-result">Test results will appear here</div>
+  </div>
+</div>
+
+<script>
+function updateUrl() {
+  const apiKey = document.getElementById('api-key').value || 'YOUR_API_KEY';
+  const entityType = document.getElementById('entity-type').value;
+  const endpointMode = document.getElementById('endpoint-mode').value;
+  const format = document.getElementById('format').value;
+  
+  let url;
+  if (endpointMode === 'list') {
+    const skip = document.getElementById('skip').value;
+    const limit = document.getElementById('limit').value;
+    const search = document.getElementById('search').value;
+    
+    url = `${window.location.origin}/api/starwars/${entityType}/${apiKey}?skip=${skip}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (format !== 'json') {
+      url += `&format=${format}`;
+    }
+  } else { // single entity
+    const entityId = document.getElementById('entity-id').value;
+    url = `${window.location.origin}/api/starwars/${entityType}/${entityId}/${apiKey}`;
+    if (format !== 'json') {
+      url += `?format=${format}`;
+    }
+  }
+  
+  document.getElementById('generated-url').value = url;
+}
+
+function copyUrl() {
+  const urlField = document.getElementById('generated-url');
+  urlField.select();
+  document.execCommand('copy');
+  alert('URL copied to clipboard!');
+}
+
+function testApi() {
+  const apiResult = document.getElementById('api-result');
+  apiResult.innerHTML = '<div class="loading">Loading...</div>';
+  apiResult.className = 'api-result';
+  
+  const url = document.getElementById('generated-url').value;
+  const format = document.getElementById('format').value;
+  
+  if (format !== 'json') {
+    window.open(url, '_blank');
+    apiResult.innerHTML = '<div>Response opened in new tab</div>';
+    return;
+  }
+  
+  fetch(url)
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('API request failed');
+      }
+      return response.json();
+    })
+    .then(data => {
+      apiResult.innerHTML = '<div style="text-align: left;"><h4>Response:</h4><pre>' + 
+        JSON.stringify(data, null, 2) + '</pre></div>';
+      apiResult.className = 'api-result has-content';
+    })
+    .catch(error => {
+      apiResult.innerHTML = `<div class="error">${error.message}</div>`;
+    });
+}
+
+// Show/hide params based on selected endpoint mode
+document.getElementById('endpoint-mode').addEventListener('change', function() {
+  const isListMode = this.value === 'list';
+  document.getElementById('list-params').style.display = isListMode ? 'block' : 'none';
+  document.getElementById('single-params').style.display = isListMode ? 'none' : 'block';
+  updateUrl();
+});
+
+// Initialize
+document.querySelectorAll('#entity-type, #endpoint-mode, #skip, #limit, #search, #entity-id, #format, #api-key').forEach(input => {
+  input.addEventListener('input', updateUrl);
+  input.addEventListener('change', updateUrl);
+});
+
+document.getElementById('test-api').addEventListener('click', testApi);
+updateUrl();
+</script>
+{% endblock %}

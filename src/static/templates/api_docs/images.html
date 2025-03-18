@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="api-detail-container">
+  <h2 class="api-title">Placeholder Image API</h2>
+  <p class="api-description">Generate placeholder images with custom dimensions and categories.</p>
+
+  <div class="endpoint-section">
+    <h3>Endpoint:</h3>
+    <div class="endpoint-url">/api/{category}/{apikey}/{name}/{width}/{height}/</div>
+    
+    <h3>Parameters:</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Accepted Values</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="param-name">category</td>
+          <td>Image category</td>
+          <td>cats, nature, dog, pup, kitten</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">apikey</td>
+          <td>Your API key</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">name</td>
+          <td>Specific image name or 'random'</td>
+          <td>Any valid image name or 'random'</td>
+          <td>'random'</td>
+        </tr>
+        <tr>
+          <td class="param-name">width</td>
+          <td>Image width in pixels</td>
+          <td>10-2000</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">height</td>
+          <td>Image height in pixels</td>
+          <td>10-2000</td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="url-builder">
+    <h3>Build Your API URL:</h3>
+    <div class="form-group">
+      <label for="api-key">API Key:</label>
+      <input type="text" id="api-key" placeholder="Your API Key" required>
+    </div>
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <select id="category">
+        <option value="cat">Cat</option>
+        <option value="nature">Nature</option>
+        <option value="dog">Dog</option>
+        <option value="pup">Pup</option>
+        <option value="kitten">Kitten</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" value="random" placeholder="Image name or 'random'">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="width">Width:</label>
+        <input type="number" id="width" value="300" min="10" max="2000">
+      </div>
+      <div class="form-group">
+        <label for="height">Height:</label>
+        <input type="number" id="height" value="200" min="10" max="2000">
+      </div>
+    </div>
+    
+    <div class="url-output">
+      <h4>Generated URL:</h4>
+      <div class="url-display">
+        <input type="text" id="generated-url" readonly>
+        <button onclick="copyUrl()" class="copy-btn">Copy</button>
+      </div>
+    </div>
+    
+    <button id="test-api" class="btn-test">Test API</button>
+    <div id="api-result" class="api-result">Test results will appear here</div>
+  </div>
+</div>
+
+<script>
+function updateUrl() {
+  const apiKey = document.getElementById('api-key').value || 'YOUR_API_KEY';
+  const category = document.getElementById('category').value;
+  const name = document.getElementById('name').value;
+  const width = document.getElementById('width').value;
+  const height = document.getElementById('height').value;
+  
+  const url = `${window.location.origin}/api/${category}/${apiKey}/${name}/${width}/${height}/`;
+  document.getElementById('generated-url').value = url;
+}
+
+function copyUrl() {
+  const urlField = document.getElementById('generated-url');
+  urlField.select();
+  document.execCommand('copy');
+  alert('URL copied to clipboard!');
+}
+
+function testApi() {
+  const apiResult = document.getElementById('api-result');
+  apiResult.innerHTML = '<div class="loading">Loading...</div>';
+  apiResult.className = 'api-result';
+  
+  const url = document.getElementById('generated-url').value;
+  
+  fetch(url)
+    .then(response => {
+      if(response.ok) {
+        return response.blob();
+      }
+      throw new Error('API request failed');
+    })
+    .then(blob => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      apiResult.innerHTML = '';
+      apiResult.appendChild(img);
+      apiResult.className = 'api-result has-content';
+    })
+    .catch(error => {
+      apiResult.innerHTML = `<div class="error">${error.message}</div>`;
+    });
+}
+
+// Initialize
+document.querySelectorAll('#category, #name, #width, #height, #api-key').forEach(input => {
+  input.addEventListener('input', updateUrl);
+  input.addEventListener('change', updateUrl);
+});
+document.getElementById('test-api').addEventListener('click', testApi);
+updateUrl();
+</script>
+{% endblock %}
