@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="api-detail-container">
+  <h2 class="api-title">Weather API</h2>
+  <p class="api-description">Generate random but consistent weather data for specific dates or entire months.</p>
+
+  <div class="endpoint-section">
+    <h3>Daily Weather Endpoint:</h3>
+    <div class="endpoint-url">/api/weather/date/{apikey}?date={date}&format={format}</div>
+    
+    <h3>Monthly Weather Endpoint:</h3>
+    <div class="endpoint-url">/api/weather/month/{apikey}?month={month}&format={format}</div>
+    
+    <h3>Parameters:</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Accepted Values</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="param-name">apikey</td>
+          <td>Your API key</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">date</td>
+          <td>Date for daily weather forecast</td>
+          <td>YYYY-MM-DD format</td>
+          <td>Current date</td>
+        </tr>
+        <tr>
+          <td class="param-name">month</td>
+          <td>Month for monthly weather forecast</td>
+          <td>YYYY-MM format</td>
+          <td>Current month</td>
+        </tr>
+        <tr>
+          <td class="param-name">format</td>
+          <td>Output format</td>
+          <td>json, html, download</td>
+          <td>json</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="url-builder">
+    <h3>Build Your API URL:</h3>
+    <div class="form-group">
+      <label for="api-key">API Key:</label>
+      <input type="text" id="api-key" placeholder="Your API Key" required>
+    </div>
+    <div class="form-group">
+      <label for="endpoint-type">Endpoint Type:</label>
+      <select id="endpoint-type">
+        <option value="date">Daily Weather</option>
+        <option value="month">Monthly Weather</option>
+      </select>
+    </div>
+    <div class="form-group" id="date-group">
+      <label for="date">Date (YYYY-MM-DD):</label>
+      <input type="date" id="date">
+    </div>
+    <div class="form-group" id="month-group" style="display:none;">
+      <label for="month">Month (YYYY-MM):</label>
+      <input type="month" id="month">
+    </div>
+    <div class="form-group">
+      <label for="format">Format:</label>
+      <select id="format">
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="download">Downloadable HTML</option>
+      </select>
+    </div>
+    
+    <div class="url-output">
+      <h4>Generated URL:</h4>
+      <div class="url-display">
+        <input type="text" id="generated-url" readonly>
+        <button onclick="copyUrl()" class="copy-btn">Copy</button>
+      </div>
+    </div>
+    
+    <button id="test-api" class="btn-test">Test API</button>
+    <div id="api-result" class="api-result">Test results will appear here</div>
+  </div>
+</div>
+
+<script>
+function updateUrl() {
+  const apiKey = document.getElementById('api-key').value || 'YOUR_API_KEY';
+  const endpointType = document.getElementById('endpoint-type').value;
+  const format = document.getElementById('format').value;
+  
+  let url;
+  if (endpointType === 'date') {
+    const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
+    url = `${window.location.origin}/api/weather/date/${apiKey}?date=${date}&format=${format}`;
+  } else {
+    const month = document.getElementById('month').value || new Date().toISOString().slice(0, 7);
+    url = `${window.location.origin}/api/weather/month/${apiKey}?month=${month}&format=${format}`;
+  }
+  
+  document.getElementById('generated-url').value = url;
+}
+
+function copyUrl() {
+  const urlField = document.getElementById('generated-url');
+  urlField.select();
+  document.execCommand('copy');
+  alert('URL copied to clipboard!');
+}
+
+function testApi() {
+  const apiResult = document.getElementById('api-result');
+  apiResult.innerHTML = '<div class="loading">Loading...</div>';
+  apiResult.className = 'api-result';
+  
+  const url = document.getElementById('generated-url').value;
+  const format = document.getElementById('format').value;
+  
+  fetch(url)
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('API request failed');
+      }
+      
+      if(format === 'json') {
+        return response.json().then(data => {
+          apiResult.innerHTML = '<div style="text-align: left;"><h4>Response:</h4><pre>' + 
+            JSON.stringify(data, null, 2) + '</pre></div>';
+          apiResult.className = 'api-result has-content';
+        });
+      } else {
+        window.open(url, '_blank');
+        apiResult.innerHTML = '<div>Response opened in new tab</div>';
+      }
+    })
+    .catch(error => {
+      apiResult.innerHTML = `<div class="error">${error.message}</div>`;
+    });
+}
+
+// Show/hide date and month inputs based on selected endpoint type
+document.getElementById('endpoint-type').addEventListener('change', function() {
+  const isDate = this.value === 'date';
+  document.getElementById('date-group').style.display = isDate ? 'block' : 'none';
+  document.getElementById('month-group').style.display = isDate ? 'none' : 'block';
+  updateUrl();
+});
+
+// Initialize
+document.querySelectorAll('#endpoint-type, #date, #month, #format, #api-key').forEach(input => {
+  input.addEventListener('input', updateUrl);
+  input.addEventListener('change', updateUrl);
+});
+
+// Set default date and month values to today
+const today = new Date();
+document.getElementById('date').value = today.toISOString().split('T')[0];
+document.getElementById('month').value = today.toISOString().slice(0, 7);
+
+document.getElementById('test-api').addEventListener('click', testApi);
+updateUrl();
+</script>
+{% endblock %}

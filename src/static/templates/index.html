@@ -1,22 +1,39 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<!-- Link External CSS File -->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-
 <div class="home-container">
-    <h2>Welcome to <span class="highlight">APIverse</span></h2>
-    <p class="description">Your one-stop API hub for seamless integration!</p>
+  <h2>Welcome to <span class="highlight">APIverse</span></h2>
+  <p class="api-description">Your comprehensive API hub for PSU students!</p>
 
-    <h3>Available APIs:</h3>
-    <ul class="api-list">
-        <li><strong>Random Text Generator:</strong> <code>/random-text</code></li>
-        <li><strong>Weather API (Coming Soon):</strong> <code>/weather</code></li>
-    </ul>
+  <div class="api-categories">
+    <div class="api-card">
+      <h3>Placeholder APIs</h3>
+      <ul>
+        <li><a href="{{ url_for('api_documentation', api_type='images') }}">Image Generator</a></li>
+        <li><a href="{{ url_for('api_documentation', api_type='paragraphs') }}">Paragraph Generator</a></li>
+      </ul>
+    </div>
+    
+    <div class="api-card">
+      <h3>Data APIs</h3>
+      <ul>
+        <li><a href="{{ url_for('api_documentation', api_type='weather') }}">Weather Forecasts</a></li>
+        <li><a href="{{ url_for('api_documentation', api_type='gradebook') }}">Gradebook Management</a></li>
+      </ul>
+    </div>
+    
+    <div class="api-card" style="border-top-color: #805ad5;">
+      <h3>Star Wars API</h3>
+      <ul>
+        <li><a href="{{ url_for('api_documentation', api_type='starwars') }}">SWAPI Reimagined</a></li>
+      </ul>
+    </div>
+  </div>
 
-    <a href="{{ url_for('dashboard') }}" class="btn-dashboard">
-        Go to Dashboard
-    </a>
+  <div class="cta-buttons">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">Get API Key</a>
+    <a href="/docs" class="btn-secondary">API Documentation</a>
+  </div>
 </div>
 
 {% endblock %}

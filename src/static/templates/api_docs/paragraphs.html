@@ -1,0 +1,212 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="api-detail-container">
+  <h2 class="api-title">Paragraph Generator API</h2>
+  <p class="api-description">Generate placeholder text paragraphs with customizable types, lengths, and quantity. Choose from preset text types or use AI-powered LLM generation for custom topics.</p>
+
+  <div class="endpoint-section">
+    <h3>Endpoint:</h3>
+    <div class="endpoint-url">/api/paragraphs/{apikey}</div>
+    
+    <h3>Parameters:</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Accepted Values</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="param-name">apikey</td>
+          <td>Your API key</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">type</td>
+          <td>Text generation type</td>
+          <td>lorem, business, tech, hipster, cats, pup, llm</td>
+          <td>lorem</td>
+        </tr>
+        <tr>
+          <td class="param-name">topic</td>
+          <td>Topic for LLM generation (only used when type='llm')</td>
+          <td>Any text</td>
+          <td>random</td>
+        </tr>
+        <tr>
+          <td class="param-name">tone</td>
+          <td>Tone for LLM generation (only used when type='llm')</td>
+          <td>neutral, formal, casual, enthusiastic, professional, humorous</td>
+          <td>neutral</td>
+        </tr>
+        <tr>
+          <td class="param-name">length</td>
+          <td>Paragraph length</td>
+          <td>short, medium, long</td>
+          <td>medium</td>
+        </tr>
+        <tr>
+          <td class="param-name">count</td>
+          <td>Number of paragraphs</td>
+          <td>1-10</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="param-name">format</td>
+          <td>Output format</td>
+          <td>json, html, paragraph_download</td>
+          <td>json</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="url-builder">
+    <h3>Build Your API URL:</h3>
+    <div class="form-group">
+      <label for="api-key">API Key:</label>
+      <input type="text" id="api-key" placeholder="Your API Key" required>
+    </div>
+    <div class="form-group">
+      <label for="type">Type:</label>
+      <select id="type">
+        <option value="lorem">Lorem Ipsum</option>
+        <option value="business">Business</option>
+        <option value="tech">Technology</option>
+        <option value="hipster">Hipster</option>
+        <option value="cats">Cats</option>
+        <option value="pup">Puppies</option>
+        <option value="llm">AI-Generated (LLM)</option>
+      </select>
+    </div>
+    
+    <!-- LLM specific options (shown only when LLM is selected) -->
+    <div id="llm-options" style="display: none;">
+      <div class="form-group">
+        <label for="topic">Topic:</label>
+        <input type="text" id="topic" placeholder="Enter a topic (e.g., space exploration)" value="random">
+      </div>
+      <div class="form-group">
+        <label for="tone">Tone:</label>
+        <select id="tone">
+          <option value="neutral">Neutral</option>
+          <option value="formal">Formal</option>
+          <option value="casual">Casual</option>
+          <option value="enthusiastic">Enthusiastic</option>
+          <option value="professional">Professional</option>
+          <option value="humorous">Humorous</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="length">Length:</label>
+      <select id="length">
+        <option value="short">Short</option>
+        <option value="medium" selected>Medium</option>
+        <option value="long">Long</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="count">Count:</label>
+      <input type="number" id="count" value="3" min="1" max="10">
+    </div>
+    <div class="form-group">
+      <label for="format">Format:</label>
+      <select id="format">
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="paragraph_download">Downloadable HTML</option>
+      </select>
+    </div>
+    
+    <div class="url-output">
+      <h4>Generated URL:</h4>
+      <div class="url-display">
+        <input type="text" id="generated-url" readonly>
+        <button onclick="copyUrl()" class="copy-btn">Copy</button>
+      </div>
+    </div>
+    
+    <button id="test-api" class="btn-test">Test API</button>
+    <div id="api-result" class="api-result">Test results will appear here</div>
+  </div>
+</div>
+
+<script>
+function updateUrl() {
+  const apiKey = document.getElementById('api-key').value || 'YOUR_API_KEY';
+  const type = document.getElementById('type').value;
+  const length = document.getElementById('length').value;
+  const count = document.getElementById('count').value;
+  const format = document.getElementById('format').value;
+  
+  let url = `${window.location.origin}/api/paragraphs/${apiKey}?type=${type}&length=${length}&count=${count}&format=${format}`;
+  
+  // Add LLM-specific parameters if LLM type is selected
+  if (type === 'llm') {
+    const topic = document.getElementById('topic').value;
+    const tone = document.getElementById('tone').value;
+    url += `&topic=${encodeURIComponent(topic)}&tone=${tone}`;
+  }
+  
+  document.getElementById('generated-url').value = url;
+}
+
+function copyUrl() {
+  const urlField = document.getElementById('generated-url');
+  urlField.select();
+  document.execCommand('copy');
+  alert('URL copied to clipboard!');
+}
+
+function testApi() {
+  const apiResult = document.getElementById('api-result');
+  apiResult.innerHTML = '<div class="loading">Loading...</div>';
+  apiResult.className = 'api-result';
+  
+  const url = document.getElementById('generated-url').value;
+  const format = document.getElementById('format').value;
+  
+  fetch(url)
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('API request failed');
+      }
+      
+      if(format === 'json') {
+        return response.json().then(data => {
+          apiResult.innerHTML = '<div style="text-align: left;"><h4>Response:</h4><pre>' + 
+            JSON.stringify(data, null, 2) + '</pre></div>';
+          apiResult.className = 'api-result has-content';
+        });
+      } else {
+        window.open(url, '_blank');
+        apiResult.innerHTML = '<div>Response opened in new tab</div>';
+      }
+    })
+    .catch(error => {
+      apiResult.innerHTML = `<div class="error">${error.message}</div>`;
+    });
+}
+
+// Show/hide LLM options based on selected type
+document.getElementById('type').addEventListener('change', function() {
+  document.getElementById('llm-options').style.display = 
+    this.value === 'llm' ? 'block' : 'none';
+  updateUrl();
+});
+
+// Initialize
+document.querySelectorAll('#type, #topic, #tone, #length, #count, #format, #api-key').forEach(input => {
+  input.addEventListener('input', updateUrl);
+  input.addEventListener('change', updateUrl);
+});
+document.getElementById('test-api').addEventListener('click', testApi);
+updateUrl();
+</script>
+{% endblock %}

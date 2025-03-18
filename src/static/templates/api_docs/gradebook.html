@@ -1,0 +1,263 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="api-detail-container">
+  <h2 class="api-title">Gradebook API</h2>
+  <p class="api-description">Generate and manage course gradebooks with customizable components and student data.</p>
+
+  <div class="endpoint-section">
+    <h3>Generate Course Endpoint:</h3>
+    <div class="endpoint-url">/api/generate_course/{apikey}</div>
+    
+    <h3>Get Course Header Endpoint:</h3>
+    <div class="endpoint-url">/api/header/{apikey}/{courseId}</div>
+    
+    <h3>Get Gradebook Endpoint:</h3>
+    <div class="endpoint-url">/api/gradebook/{apikey}/{courseId}?format={format}</div>
+    
+    <h3>Parameters:</h3>
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Accepted Values</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="param-name">apikey</td>
+          <td>Your API key</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">courseId</td>
+          <td>Unique course identifier</td>
+          <td>Any valid string (e.g., CS450)</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td class="param-name">numStudents</td>
+          <td>Number of students to generate</td>
+          <td>1+</td>
+          <td>20</td>
+        </tr>
+        <tr>
+          <td class="param-name">numHomeworks</td>
+          <td>Number of homework assignments</td>
+          <td>0+</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="param-name">numDiscussions</td>
+          <td>Number of discussion assignments</td>
+          <td>0+</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td class="param-name">numExams</td>
+          <td>Number of exams</td>
+          <td>0+</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="param-name">homeworkWeight</td>
+          <td>Homework percentage weight</td>
+          <td>0-100</td>
+          <td>40</td>
+        </tr>
+        <tr>
+          <td class="param-name">discussionWeight</td>
+          <td>Discussion percentage weight</td>
+          <td>0-100</td>
+          <td>30</td>
+        </tr>
+        <tr>
+          <td class="param-name">examWeight</td>
+          <td>Exam percentage weight</td>
+          <td>0-100</td>
+          <td>30</td>
+        </tr>
+        <tr>
+          <td class="param-name">format</td>
+          <td>Output format (for gradebook endpoint)</td>
+          <td>json, html, download</td>
+          <td>json</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Note:</strong> The sum of homeworkWeight, discussionWeight, and examWeight must equal 100%.</p>
+  </div>
+
+  <div class="url-builder">
+    <h3>Build Your API URL:</h3>
+    <div class="form-group">
+      <label for="api-key">API Key:</label>
+      <input type="text" id="api-key" placeholder="Your API Key" required>
+    </div>
+    <div class="form-group">
+      <label for="endpoint-type">Endpoint Type:</label>
+      <select id="endpoint-type">
+        <option value="generate">Generate Course</option>
+        <option value="header">Get Course Header</option>
+        <option value="gradebook">Get Gradebook</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="courseId">Course ID:</label>
+      <input type="text" id="courseId" value="CS450" placeholder="e.g., CS450">
+    </div>
+    
+    <!-- Generate Course Parameters (shown/hidden based on endpoint) -->
+    <div id="generate-params">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="numStudents">Number of Students:</label>
+          <input type="number" id="numStudents" value="20" min="1">
+        </div>
+        <div class="form-group">
+          <label for="numHomeworks">Number of Homeworks:</label>
+          <input type="number" id="numHomeworks" value="3" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="numDiscussions">Number of Discussions:</label>
+          <input type="number" id="numDiscussions" value="2" min="0">
+        </div>
+        <div class="form-group">
+          <label for="numExams">Number of Exams:</label>
+          <input type="number" id="numExams" value="1" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="homeworkWeight">Homework Weight (%):</label>
+          <input type="number" id="homeworkWeight" value="40" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label for="discussionWeight">Discussion Weight (%):</label>
+          <input type="number" id="discussionWeight" value="30" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="examWeight">Exam Weight (%):</label>
+        <input type="number" id="examWeight" value="30" min="0" max="100">
+      </div>
+      <div id="weight-warning" class="error" style="display: none;">
+        Note: The sum of weights must equal 100%
+      </div>
+    </div>
+    
+    <!-- Format option (for gradebook endpoint) -->
+    <div class="form-group" id="format-group" style="display:none;">
+      <label for="format">Format:</label>
+      <select id="format">
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="download">Downloadable HTML</option>
+      </select>
+    </div>
+    
+    <div class="url-output">
+      <h4>Generated URL:</h4>
+      <div class="url-display">
+        <input type="text" id="generated-url" readonly>
+        <button onclick="copyUrl()" class="copy-btn">Copy</button>
+      </div>
+    </div>
+    
+    <button id="test-api" class="btn-test">Test API</button>
+    <div id="api-result" class="api-result">Test results will appear here</div>
+  </div>
+</div>
+
+<script>
+function updateUrl() {
+  const apiKey = document.getElementById('api-key').value || 'YOUR_API_KEY';
+  const endpointType = document.getElementById('endpoint-type').value;
+  const courseId = document.getElementById('courseId').value || 'CS450';
+  
+  let url;
+  if (endpointType === 'generate') {
+    const numStudents = document.getElementById('numStudents').value;
+    const numHomeworks = document.getElementById('numHomeworks').value;
+    const numDiscussions = document.getElementById('numDiscussions').value;
+    const numExams = document.getElementById('numExams').value;
+    const homeworkWeight = document.getElementById('homeworkWeight').value;
+    const discussionWeight = document.getElementById('discussionWeight').value;
+    const examWeight = document.getElementById('examWeight').value;
+    
+    // Check if weights sum to 100%
+    const totalWeight = parseInt(homeworkWeight) + parseInt(discussionWeight) + parseInt(examWeight);
+    document.getElementById('weight-warning').style.display = totalWeight !== 100 ? 'block' : 'none';
+    
+    url = `${window.location.origin}/api/generate_course/${apiKey}?courseId=${courseId}&numStudents=${numStudents}&numHomeworks=${numHomeworks}&numDiscussions=${numDiscussions}&numExams=${numExams}&homeworkWeight=${homeworkWeight}&discussionWeight=${discussionWeight}&examWeight=${examWeight}`;
+  } else if (endpointType === 'header') {
+    url = `${window.location.origin}/api/header/${apiKey}/${courseId}`;
+  } else { // gradebook
+    const format = document.getElementById('format').value;
+    url = `${window.location.origin}/api/gradebook/${apiKey}/${courseId}?format=${format}`;
+  }
+  
+  document.getElementById('generated-url').value = url;
+}
+
+function copyUrl() {
+  const urlField = document.getElementById('generated-url');
+  urlField.select();
+  document.execCommand('copy');
+  alert('URL copied to clipboard!');
+}
+
+function testApi() {
+  const apiResult = document.getElementById('api-result');
+  apiResult.innerHTML = '<div class="loading">Loading...</div>';
+  apiResult.className = 'api-result';
+  
+  const url = document.getElementById('generated-url').value;
+  const endpointType = document.getElementById('endpoint-type').value;
+  const format = document.getElementById('format').value;
+  
+  if (endpointType === 'gradebook' && format !== 'json') {
+    window.open(url, '_blank');
+    apiResult.innerHTML = '<div>Response opened in new tab</div>';
+    return;
+  }
+  
+  fetch(url)
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('API request failed');
+      }
+      return response.json();
+    })
+    .then(data => {
+      apiResult.innerHTML = '<div style="text-align: left;"><h4>Response:</h4><pre>' + 
+        JSON.stringify(data, null, 2) + '</pre></div>';
+      apiResult.className = 'api-result has-content';
+    })
+    .catch(error => {
+      apiResult.innerHTML = `<div class="error">${error.message}</div>`;
+    });
+}
+
+// Show/hide params based on selected endpoint type
+document.getElementById('endpoint-type').addEventListener('change', function() {
+  const type = this.value;
+  document.getElementById('generate-params').style.display = type === 'generate' ? 'block' : 'none';
+  document.getElementById('format-group').style.display = type === 'gradebook' ? 'block' : 'none';
+  updateUrl();
+});
+
+// Initialize
+document.querySelectorAll('#endpoint-type, #courseId, #numStudents, #numHomeworks, #numDiscussions, #numExams, #homeworkWeight, #discussionWeight, #examWeight, #format, #api-key').forEach(input => {
+  input.addEventListener('input', updateUrl);
+  input.addEventListener('change', updateUrl);
+});
+
+document.getElementById('test-api').addEventListener('click', testApi);
+updateUrl();
+</script>
+{% endblock %}

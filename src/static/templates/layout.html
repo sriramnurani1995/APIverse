@@ -2,16 +2,27 @@
 <html lang="en">
   <head>
     <title>APIverse</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
 
   <body>
     <nav class="navbar">
       <ul>
         <li><a href="{{ url_for('index') }}">Home</a></li>
+        
+        <li class="dropdown">
+          <a href="#" class="dropbtn">API Docs</a>
+          <div class="dropdown-content">
+            <a href="{{ url_for('api_documentation', api_type='images') }}">Images</a>
+            <a href="{{ url_for('api_documentation', api_type='paragraphs') }}">Paragraphs</a>
+            <a href="{{ url_for('api_documentation', api_type='weather') }}">Weather</a>
+            <a href="{{ url_for('api_documentation', api_type='gradebook') }}">Gradebook</a>
+            <a href="{{ url_for('api_documentation', api_type='starwars') }}">SWAPI Reimagined</a>
+            <a href="/docs">Swagger UI</a>
+          </div>
+        </li>
+        
         {% if 'user' in session %}
         <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
         <li><a href="{{ url_for('logout') }}">Logout</a></li>
@@ -22,6 +33,8 @@
       </ul>
     </nav>
 
-    <div class="container">{% block content %}{% endblock %}</div>
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
   </body>
 </html>
