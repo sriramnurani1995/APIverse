@@ -1,91 +1,186 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 550">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
   <!-- Background -->
-  <rect width="800" height="550" fill="#f8f9fa" rx="10" ry="10"/>
+  <rect width="800" height="800" fill="white"/>
   
   <!-- Title -->
-  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">APIverse Architecture</text>
+  <text x="400" y="30" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">APIverse Architecture</text>
   
   <!-- Client Layer -->
-  <rect x="50" y="80" width="700" height="60" rx="5" ry="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
-  <text x="400" y="120" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">User Browser</text>
+  <rect x="50" y="50" width="700" height="60" rx="5" ry="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">User Browser / Client Applications</text>
   
-  <!-- Arrows from clients to gateway -->
-  <path d="M400 140 L400 180" stroke="#1565c0" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <text x="430" y="165" font-family="Arial" font-size="12">HTTP Requests</text>
+  <!-- Client components -->
+  <rect x="150" y="85" width="200" height="20" rx="3" ry="3" fill="#bbdefb" stroke="#1565c0" stroke-width="1"/>
+  <text x="250" y="100" font-family="Arial" font-size="12" text-anchor="middle">Web Dashboard Interface</text>
+  
+  <rect x="450" y="85" width="200" height="20" rx="3" ry="3" fill="#bbdefb" stroke="#1565c0" stroke-width="1"/>
+  <text x="550" y="100" font-family="Arial" font-size="12" text-anchor="middle">API Clients</text>
+  
+  <!-- Simple Arrow to Flask -->
+  <line x1="400" y1="110" x2="400" y2="125" stroke="#333333" stroke-width="2"/>
+  <polygon points="400,135 395,125 405,125" fill="#333333"/>
+  
+  <!-- Gray rectangle to indicate Cloud Run boundary - with proper spacing -->
+  <rect x="30" y="145" width="740" height="425" rx="10" ry="10" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="400" y="163" font-family="Arial" font-size="14" text-anchor="middle" font-style="italic" fill="#616161">Google Cloud Run</text>
   
   <!-- Flask Gateway Layer -->
-  <rect x="50" y="180" width="700" height="100" rx="5" ry="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-  <text x="400" y="205" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">Flask Application (Gateway)</text>
-  <text x="400" y="230" font-family="Arial" font-size="14" text-anchor="middle">Authentication, API Key Validation, Request Routing</text>
+  <rect x="50" y="175" width="700" height="95" rx="5" ry="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="400" y="195" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Flask Application (Gateway)</text>
+  <text x="400" y="215" font-family="Arial" font-size="12" text-anchor="middle">Authentication, API Key Validation, Request Routing</text>
   
-  <!-- Arrows from gateway to services -->
-  <path d="M400 280 L400 320" stroke="#2e7d32" stroke-width="2" marker-end="url(#arrowhead)"/>
- 
-  <text x="420" y="305" font-family="Arial" font-size="12">Internal API Calls</text>
+  <!-- Flask Components - With proper spacing -->
+  <rect x="62" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="112" y="247" font-family="Arial" font-size="10" text-anchor="middle">User Auth</text>
+  
+  <rect x="174" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="224" y="247" font-family="Arial" font-size="10" text-anchor="middle">API Key Mgmt</text>
+  
+  <rect x="286" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="336" y="247" font-family="Arial" font-size="10" text-anchor="middle">Request Router</text>
+  
+  <rect x="398" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="448" y="247" font-family="Arial" font-size="10" text-anchor="middle">Web Interface</text>
+  
+  <rect x="510" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="560" y="247" font-family="Arial" font-size="10" text-anchor="middle">Session Mgmt</text>
+  
+  <rect x="622" y="230" width="100" height="25" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
+  <text x="672" y="247" font-family="Arial" font-size="10" text-anchor="middle">File Proxying</text>
+  
+  <!-- Simple Arrow to FastAPI -->
+  <line x1="400" y1="270" x2="400" y2="285" stroke="#333333" stroke-width="2"/>
+  <polygon points="400,295 395,285 405,285" fill="#333333"/>
   
   <!-- FastAPI Service Layer -->
-  <rect x="50" y="320" width="700" height="100" rx="5" ry="5" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
-  <text x="400" y="345" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">FastAPI Service Layer</text>
-  <text x="400" y="370" font-family="Arial" font-size="14" text-anchor="middle">API Implementation, Data Processing, Content Generation</text>
+  <rect x="50" y="295" width="700" height="140" rx="5" ry="5" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="400" y="315" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">FastAPI Service Layer</text>
+  <text x="400" y="335" font-family="Arial" font-size="12" text-anchor="middle">API Implementation, Data Processing, Content Generation</text>
   
-  <!-- Arrows from services to database -->
-  <path d="M400 420 L400 460" stroke="#e65100" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <text x="430" y="445" font-family="Arial" font-size="12">Data Operations</text>
+  <!-- FastAPI Service Components - First row - With proper spacing -->
+  <rect x="65" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="115" y="367" font-family="Arial" font-size="10" text-anchor="middle">Placeholder API</text>
   
-  <!-- Database Layer -->
-  <rect x="150" y="460" width="500" height="80" rx="5" ry="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
-  <text x="400" y="485" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">Google Cloud Datastore</text>
+  <rect x="175" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="225" y="367" font-family="Arial" font-size="10" text-anchor="middle">Weather API</text>
   
-  <!-- Component boxes inside layers -->
-  <!-- Flask Components -->
-  <rect x="70" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
-  <text x="120" y="260" font-family="Arial" font-size="12" text-anchor="middle">User Auth</text>
+  <rect x="285" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="335" y="367" font-family="Arial" font-size="10" text-anchor="middle">Gradebook API</text>
   
-  <rect x="190" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
-  <text x="240" y="260" font-family="Arial" font-size="12" text-anchor="middle">API Key Mgmt</text>
+  <rect x="395" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="445" y="367" font-family="Arial" font-size="10" text-anchor="middle">Star Wars API</text>
   
-  <rect x="310" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
-  <text x="360" y="260" font-family="Arial" font-size="12" text-anchor="middle">Request Router</text>
+  <rect x="505" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="555" y="367" font-family="Arial" font-size="10" text-anchor="middle">File Generation</text>
   
-  <rect x="430" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
-  <text x="480" y="260" font-family="Arial" font-size="12" text-anchor="middle">Web Interface</text>
+  <rect x="615" y="350" width="100" height="25" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+  <text x="665" y="367" font-family="Arial" font-size="10" text-anchor="middle">Caching System</text>
   
-  <rect x="550" y="240" width="100" height="30" rx="3" ry="3" fill="#b9f6ca" stroke="#00c853" stroke-width="1"/>
-  <text x="600" y="260" font-family="Arial" font-size="12" text-anchor="middle">Session Mgmt</text>
+  <!-- Sub-functions - Second row - Fixed spacing and alignment -->
+  <rect x="65" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="87" y="399" font-family="Arial" font-size="8" text-anchor="middle">Images</text>
   
-  <!-- FastAPI Components -->
-  <rect x="60" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
-  <text x="110" y="400" font-family="Arial" font-size="12" text-anchor="middle">Weather API</text>
+  <rect x="120" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="142" y="399" font-family="Arial" font-size="8" text-anchor="middle">Paragraphs</text>
   
-  <rect x="180" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
-  <text x="230" y="400" font-family="Arial" font-size="12" text-anchor="middle">Placeholder API</text>
+  <rect x="175" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="197" y="399" font-family="Arial" font-size="8" text-anchor="middle">Daily</text>
   
-  <rect x="300" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
-  <text x="350" y="400" font-family="Arial" font-size="12" text-anchor="middle">Gradebook API</text>
+  <rect x="230" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="252" y="399" font-family="Arial" font-size="8" text-anchor="middle">Monthly</text>
   
-  <rect x="420" y="380" width="100" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
-  <text x="470" y="400" font-family="Arial" font-size="12" text-anchor="middle">Star Wars API</text>
+  <rect x="285" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="307" y="399" font-family="Arial" font-size="8" text-anchor="middle">Courses</text>
   
-  <rect x="540" y="380" width="160" height="30" rx="3" ry="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
-  <text x="620" y="400" font-family="Arial" font-size="12" text-anchor="middle">File Generation/Caching</text>
+  <rect x="340" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="362" y="399" font-family="Arial" font-size="8" text-anchor="middle">Grades</text>
   
-  <!-- Database Components -->
-  <rect x="170" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
-  <text x="210" y="515" font-family="Arial" font-size="12" text-anchor="middle">Users</text>
+  <rect x="395" y="385" width="30" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="410" y="399" font-family="Arial" font-size="8" text-anchor="middle">Films</text>
   
-  <rect x="270" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
-  <text x="310" y="515" font-family="Arial" font-size="12" text-anchor="middle">API Keys</text>
+  <rect x="435" y="385" width="30" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="450" y="399" font-family="Arial" font-size="8" text-anchor="middle">People</text>
   
-  <rect x="370" y="495" width="110" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
-  <text x="425" y="515" font-family="Arial" font-size="12" text-anchor="middle">Course Data</text>
+  <rect x="475" y="385" width="30" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="490" y="399" font-family="Arial" font-size="8" text-anchor="middle">Planets</text>
   
-  <rect x="500" y="495" width="80" height="30" rx="3" ry="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
-  <text x="540" y="515" font-family="Arial" font-size="12" text-anchor="middle">Weather</text>
+  <rect x="515" y="385" width="40" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="535" y="399" font-family="Arial" font-size="8" text-anchor="middle">HTML</text>
   
-  <!-- Arrow definitions -->
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
-    </marker>
-  </defs>
+  <rect x="565" y="385" width="40" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="585" y="399" font-family="Arial" font-size="8" text-anchor="middle">Files</text>
+  
+  <rect x="615" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="637" y="399" font-family="Arial" font-size="8" text-anchor="middle">Response</text>
+  
+  <rect x="670" y="385" width="45" height="20" rx="3" ry="3" fill="#ffecb3" stroke="#ff9800" stroke-width="1"/>
+  <text x="692" y="399" font-family="Arial" font-size="8" text-anchor="middle">Image</text>
+  
+  <!-- Simple Arrow to Utility Layer -->
+  <line x1="400" y1="435" x2="400" y2="450" stroke="#333333" stroke-width="2"/>
+  <polygon points="400,460 395,450 405,450" fill="#333333"/>
+  
+  <!-- Utility Layer -->
+  <rect x="50" y="460" width="700" height="75" rx="5" ry="5" fill="#e8eaf6" stroke="#3f51b5" stroke-width="2"/>
+  <text x="400" y="480" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Utility Layer</text>
+  <text x="400" y="500" font-family="Arial" font-size="12" text-anchor="middle">Shared Functionality Used Across Services</text>
+  
+  <!-- Utility Components - Fixed spacing -->
+  <rect x="60" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="105" y="524" font-family="Arial" font-size="9" text-anchor="middle">API Key Generation</text>
+  
+  <rect x="160" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="205" y="524" font-family="Arial" font-size="9" text-anchor="middle">Image Processing</text>
+  
+  <rect x="260" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="305" y="524" font-family="Arial" font-size="9" text-anchor="middle">Paragraph Processing</text>
+  
+  <rect x="360" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="405" y="524" font-family="Arial" font-size="9" text-anchor="middle">HTML Generation</text>
+  
+  <rect x="460" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="505" y="524" font-family="Arial" font-size="9" text-anchor="middle">File Utilities</text>
+  
+  <rect x="560" y="510" width="90" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="605" y="524" font-family="Arial" font-size="9" text-anchor="middle">Caching</text>
+  
+  <rect x="660" y="510" width="80" height="20" rx="3" ry="3" fill="#c5cae9" stroke="#3f51b5" stroke-width="1"/>
+  <text x="700" y="524" font-family="Arial" font-size="9" text-anchor="middle">Grade Utilities</text>
+  
+  <!-- Simple Arrow to Google Cloud Services -->
+  <line x1="400" y1="535" x2="400" y2="555" stroke="#333333" stroke-width="2"/>
+  <polygon points="400,565 395,555 405,555" fill="#333333"/>
+  
+  <!-- Google Cloud Services Header - Properly centered -->
+  <text x="430" y="580" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold" fill="#4285F4">Google Cloud Services</text>
+  
+  <!-- Google Cloud Services Icons - Fixed positioning and spacing -->
+  <!-- Datastore -->
+  <rect x="100" y="595" width="275" height="70" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="2"/>
+  <circle cx="135" cy="630" r="15" fill="#4285F4"/>
+  <text x="135" y="634" font-family="Arial" font-size="10" text-anchor="middle" fill="white" font-weight="bold">GCP</text>
+  <text x="250" y="615" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Google Cloud Datastore</text>
+  <text x="250" y="635" font-family="Arial" font-size="10" text-anchor="middle">Persistent storage for user accounts,</text>
+  <text x="250" y="650" font-family="Arial" font-size="10" text-anchor="middle">API keys, and application data</text>
+  
+  <!-- Storage -->
+  <rect x="425" y="595" width="275" height="70" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="2"/>
+  <circle cx="460" cy="630" r="15" fill="#4285F4"/>
+  <text x="460" y="634" font-family="Arial" font-size="10" text-anchor="middle" fill="white" font-weight="bold">GCP</text>
+  <text x="565" y="615" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Cloud Storage / File System</text>
+  <text x="565" y="635" font-family="Arial" font-size="10" text-anchor="middle">Storage for images and</text>
+  <text x="565" y="650" font-family="Arial" font-size="10" text-anchor="middle">generated files</text>
+  
+  <!-- Additional Cloud Services - Equal spacing -->
+  <rect x="50" y="675" width="160" height="30" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="1"/>
+  <text x="130" y="695" font-family="Arial" font-size="12" text-anchor="middle" font-weight="bold">Artifact Registry</text>
+  
+  <rect x="230" y="675" width="160" height="30" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="1"/>
+  <text x="310" y="695" font-family="Arial" font-size="12" text-anchor="middle" font-weight="bold">Cloud IAM</text>
+  
+  <rect x="410" y="675" width="160" height="30" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="1"/>
+  <text x="490" y="695" font-family="Arial" font-size="12" text-anchor="middle" font-weight="bold">Vertex AI (Gemini)</text>
+  
+  <rect x="590" y="675" width="160" height="30" rx="5" ry="5" fill="#F1F3F4" stroke="#4285F4" stroke-width="1"/>
+  <text x="670" y="695" font-family="Arial" font-size="12" text-anchor="middle" font-weight="bold">Cloud Logging</text>
 </svg>

@@ -6,6 +6,7 @@ A comprehensive API hub for PSU students, providing reliable placeholder, weathe
 
 - [Overview](#overview)
 - [Features](#features)
+- [Tech Stack](#tech-stack)
 - [Technical Architecture](#technical-architecture)
 - [Project Structure](#project-structure)
 - [API Reference](#api-reference)
@@ -13,6 +14,7 @@ A comprehensive API hub for PSU students, providing reliable placeholder, weathe
   - [Paragraph API](#paragraph-api)
   - [Weather API](#weather-api)
   - [Gradebook API](#gradebook-api)
+  - [Star Wars API](#star-wars-api)
 - [Authentication](#authentication)
 - [Installation & Setup](#installation--setup)
 - [Local Development](#local-development)
@@ -29,11 +31,12 @@ APIverse is a Software Engineering Project that provides PSU students with a loc
 
 ### Core Features
 
-- **User Authentication**: Secure signup, login, and account management for PDX users
+- **User Authentication**: Secure signup, login, and account management for PDX users with OAuth integration
 - **API Key Management**: Generation, validation, and revocation of API keys
 - **Placeholder APIs**:
   - Image generation with customizable dimensions and categories
   - Paragraph text generation with variable themes, lengths, and counts
+  - AI-powered text generation using Google's Gemini model
 - **Weather API**:
   - Daily weather forecasts with randomized but reproducible data
   - Monthly weather data with appropriate seasonal variations
@@ -41,7 +44,7 @@ APIverse is a Software Engineering Project that provides PSU students with a loc
   - Course creation with customizable grading components
   - Student grade generation with realistic distributions
   - Multiple output formats (JSON, HTML, downloadable)
-- **Star Wars API**: Re-implementation of swapi.dev with enhanced data
+- **Star Wars API**: Re-implementation of swapi.dev with enhanced data and search functionality
 
 ### Technical Features
 
@@ -50,7 +53,64 @@ APIverse is a Software Engineering Project that provides PSU students with a loc
 - Secure API key generation with salted hashing
 - Caching system for optimized performance
 - File generation and download capabilities
-- Responsive web interface
+- Responsive web interface with interactive documentation
+- Password reset system with email verification
+- Integration with Google's Vertex AI (Gemini model) for LLM-generated text
+
+## Tech Stack
+
+### Core Technologies
+
+- **Python 3.11**: Primary programming language
+- **Flask**: Frontend web framework for user interface and gateway
+- **FastAPI**: Backend API framework with built-in OpenAPI documentation
+- **Jinja2**: Template engine for HTML rendering
+- **Google Cloud Platform**: Cloud provider for hosting and services
+
+### Frontend
+
+- **HTML/CSS**: Custom-designed responsive web interface
+- **JavaScript**: Client-side interactivity and API testing
+- **Swagger UI**: Interactive API documentation
+- **ReDoc**: Alternative API documentation viewer
+
+### Backend
+
+- **Uvicorn**: ASGI server for FastAPI
+- **Werkzeug**: WSGI web application library used by Flask
+- **Pydantic**: Data validation and settings management
+- **requests**: HTTP library for API communication
+
+### Google Cloud Services
+
+- **Cloud Datastore**: NoSQL database for user data and API keys
+- **Cloud Run**: Serverless container runtime
+- **Artifact Registry**: Container image storage
+- **Cloud IAM**: Identity and access management
+- **Vertex AI**: Machine learning platform (Gemini model)
+
+### Authentication & Security
+
+- **Google OAuth**: Authentication via Google accounts
+- **SHA-256**: Secure hashing for API keys
+- **Secrets**: Secure random token generation
+- **SMTP**: Email service for password reset
+
+### Image Processing
+
+- **Pillow**: Python Imaging Library for image resizing and manipulation
+
+### Data Generation & Utilities
+
+- **Faker**: Generation of realistic student names
+- **Random**: Randomized data generation with seeded consistency
+- **UUID**: Generation of unique identifiers
+
+### Development & Deployment
+
+- **Docker**: Containerization for consistent deployment
+- **dotenv**: Environment variable management
+- **Google Cloud SDK**: CLI tools for GCP deployment
 
 ## Technical Architecture
 
@@ -59,22 +119,33 @@ APIverse employs a two-tier architecture:
 1. **Frontend/Gateway Layer** (Flask):
 
    - User authentication and session management
+   - Google OAuth integration for social login
    - API key generation and validation
    - Request routing and endpoint security
    - Web interface for user interaction
+   - Password reset functionality with email verification
 
 2. **Backend/Service Layer** (FastAPI):
 
    - Core API functionality
-   - Data processing and generation
-   - Resource transformation
-   - File handling and caching
+   - AI integration for text generation
+   - Data processing and response formatting
+   - Resource transformation (image resizing, file generation)
+   - Caching for performance optimization
+   - OpenAPI documentation with Swagger UI
 
 3. **Data Layer** (Google Cloud Datastore):
-   - User accounts and authentication
-   - API key storage and validation
-   - Persistent data for APIs
+
+   - User accounts and authentication data
+   - API key storage with secure hashing
+   - Persistent data for APIs (weather, courses, Star Wars entities)
    - Object mapping and querying
+
+4. **Google Cloud Platform**:
+   - Cloud Run for containerized deployment
+   - Artifact Registry for Docker image storage
+   - Vertex AI for Gemini LLM integration
+   - Cloud IAM for service account management
 
 ![Architecture Diagram](architecture_diagram.svg)
 
@@ -90,7 +161,15 @@ src/
 │   ├── index.py             # Homepage controller
 │   ├── login.py             # User authentication
 │   ├── logout.py            # Session management
-│   └── signup.py            # User registration
+│   ├── signup.py            # User registration
+│   ├── reset_request.py     # Password reset request handler
+│   ├── verify_otp.py        # OTP verification for password reset
+│   └── reset_password.py    # Password reset completion
+├── auth/                    # OAuth authentication
+│   ├── __init__.py
+│   ├── callback.py          # OAuth callback handler
+│   ├── login.py             # OAuth login initiator
+│   └── logout.py            # OAuth logout handler
 ├── model/                   # Data access layer
 │   ├── __init__.py
 │   └── model_datastore.py   # Google Cloud Datastore integration
@@ -98,25 +177,32 @@ src/
 │   ├── __init__.py
 │   ├── fastapi_service.py   # Main FastAPI application
 │   ├── gradebook_service.py # Course and student grade generation
-│   └── weather_service.py   # Weather data generation
+│   ├── weather_service.py   # Weather data generation
+│   └── starwars_service.py  # Star Wars API implementation
 ├── static/                  # Web assets
 │   ├── styles.css           # Global stylesheet
-│   └── templates/           # HTML templates
-│       ├── dashboard.html   # API key management view
-│       ├── index.html       # Homepage view
-│       ├── layout.html      # Base template
-│       ├── login.html       # Login form
-│       └── signup.html      # Registration form
-└── utils/                   # Shared utilities
-    ├── __init__.py
-    ├── api_key_generation.py # API key management
-    ├── caching.py           # Memory caching system
-    ├── file_utils.py        # File handling utilities
-    ├── grade_utils.py       # Grade calculation functions
-    ├── helpers.py           # Miscellaneous helper functions
-    ├── html_utils.py        # HTML generation utilities
-    ├── image_processing.py  # Image resizing and caching
-    └── paragraph_processing.py # Text generation utilities
+│   ├── templates/           # HTML templates
+│   │   ├── dashboard.html   # API key management view
+│   │   ├── index.html       # Homepage view
+│   │   ├── layout.html      # Base template
+│   │   ├── login.html       # Login form
+│   │   ├── signup.html      # Registration form
+│   │   ├── reset_request.html # Password reset request
+│   │   ├── verify_otp.html  # OTP verification
+│   │   ├── reset_password.html # New password form
+│   │   └── api_docs/        # API documentation templates
+│   └── *-images/            # Image categories for placeholder API
+├── utils/                   # Shared utilities
+│   ├── __init__.py
+│   ├── api_key_generation.py # API key management
+│   ├── caching.py           # Memory caching system
+│   ├── file_utils.py        # File handling utilities
+│   ├── grade_utils.py       # Grade calculation functions
+│   ├── helpers.py           # Miscellaneous helper functions
+│   ├── html_utils.py        # HTML generation utilities
+│   ├── image_processing.py  # Image resizing and caching
+│   └── paragraph_processing.py # Text generation utilities
+└── Dockerfile               # Container configuration
 ```
 
 ## API Reference
@@ -131,18 +217,15 @@ Generate placeholder images with custom dimensions.
 
 **URL Parameters**:
 
-- `category`: Image category (e.g., 'cats', 'nature')
+- `category`: Image category (e.g., 'cats', 'nature', 'dog', 'pup', 'kitten')
 - `apikey`: Your API key
 - `name`: Specific image name or 'random'
-- `width`: Image width in pixels
-- `height`: Image height in pixels
+- `width`: Image width in pixels (10-2000)
+- `height`: Image height in pixels (10-2000)
 
 **Response**: JPEG image
 
 **Example**: `/api/cats/YOUR_API_KEY/random/300/200/`
-
-**Sample Response**:
-Returns a JPEG image file of a cat with dimensions 300x200 pixels.
 
 ### Paragraph API
 
@@ -158,9 +241,11 @@ Generate placeholder text paragraphs.
 
 **Query Parameters**:
 
-- `type`: Text type ('lorem', 'business', 'tech', 'hipster', 'cats', 'pup') - default: 'lorem'
+- `type`: Text type ('lorem', 'business', 'tech', 'hipster', 'cats', 'pup', 'llm') - default: 'lorem'
+- `topic`: Topic for LLM generation (only when type='llm') - default: 'random'
+- `tone`: Tone for LLM generation (only when type='llm') - default: 'neutral'
 - `length`: Paragraph length ('short', 'medium', 'long') - default: 'medium'
-- `count`: Number of paragraphs - default: 3
+- `count`: Number of paragraphs (1-10) - default: 3
 - `format`: Output format ('json', 'html', 'paragraph_download') - default: 'json'
 
 **Response**:
@@ -170,17 +255,6 @@ Generate placeholder text paragraphs.
 - Downloadable HTML file
 
 **Example**: `/api/paragraphs/YOUR_API_KEY?type=business&length=short&count=2&format=json`
-
-**Sample Response**:
-
-```json
-{
-  "paragraphs": [
-    "Leverage key deliverables. Synergize core competencies. Maximize ROI. Empower team collaboration. Scale vertical markets drive innovation optimize operational efficiencies.",
-    "Engage stakeholders. Pivot strategy disrupt traditional paradigms. Drive innovation. Optimize operational efficiencies. Leverage key deliverables synergize core competencies."
-  ]
-}
-```
 
 ### Weather API
 
@@ -209,19 +283,6 @@ Generate random but consistent weather data.
 
 **Example**: `/api/weather/date/YOUR_API_KEY?date=2023-06-15&format=json`
 
-**Sample Response**:
-
-```json
-{
-  "date": "2023-06-15",
-  "temperature": 28,
-  "wind": 12,
-  "precipitation": 5,
-  "condition": "Sunny",
-  "description": "Clear skies and warm temperatures."
-}
-```
-
 #### Monthly Weather
 
 **Endpoint**: `/api/weather/month/<apikey>`
@@ -244,32 +305,6 @@ Generate random but consistent weather data.
 - Downloadable HTML file
 
 **Example**: `/api/weather/month/YOUR_API_KEY?month=2023-06&format=json`
-
-**Sample Response**:
-
-```json
-[
-  {
-    "date": "2023-06-01",
-    "temperature": 26,
-    "wind": 8,
-    "precipitation": 0,
-    "condition": "Sunny",
-    "description": "Clear skies and warm temperatures."
-  },
-  {
-    "date": "2023-06-02",
-    "temperature": 29,
-    "wind": 12,
-    "precipitation": 3,
-    "condition": "Cloudy",
-    "description": "Overcast skies with mild temperatures."
-  }
-  // ... additional days of the month
-]
-```
-
-**HTML Format Example**: `/api/weather/month/YOUR_API_KEY?month=2023-06&format=html`
 
 ### Gradebook API
 
@@ -300,15 +335,6 @@ Generate and manage course gradebooks.
 
 **Example**: `/api/generate_course/YOUR_API_KEY?courseId=CS450&numStudents=25`
 
-**Sample Response**:
-
-```json
-{
-  "message": "Course and students generated successfully",
-  "courseId": "CS450"
-}
-```
-
 #### Get Course Header
 
 **Endpoint**: `/api/header/<apikey>/<courseId>`
@@ -323,24 +349,6 @@ Generate and manage course gradebooks.
 **Response**: JSON object with course configuration
 
 **Example**: `/api/header/YOUR_API_KEY/CS450`
-
-**Sample Response**:
-
-```json
-{
-  "courseId": "CS450",
-  "weightage": {
-    "Homework": 40,
-    "Discussions": 30,
-    "FinalExam": 30
-  },
-  "components": {
-    "Homework": 3,
-    "Discussions": 2,
-    "FinalExam": 1
-  }
-}
-```
 
 #### Get Gradebook
 
@@ -365,65 +373,59 @@ Generate and manage course gradebooks.
 
 **Example**: `/api/gradebook/YOUR_API_KEY/CS450?format=json`
 
-**Sample Response**:
+### Star Wars API
 
-```json
-[
-  {
-    "courseId": "CS450",
-    "studentId": 1,
-    "name": "Jane Smith",
-    "components": [
-      {
-        "type": "Homework",
-        "component": "Homework 1",
-        "marks": 92,
-        "totalMarks": 100
-      },
-      {
-        "type": "Homework",
-        "component": "Homework 2",
-        "marks": 88,
-        "totalMarks": 100
-      },
-      {
-        "type": "Homework",
-        "component": "Homework 3",
-        "marks": 95,
-        "totalMarks": 100
-      },
-      {
-        "type": "Discussions",
-        "component": "Discussions 1",
-        "marks": 90,
-        "totalMarks": 100
-      },
-      {
-        "type": "Discussions",
-        "component": "Discussions 2",
-        "marks": 85,
-        "totalMarks": 100
-      },
-      {
-        "type": "FinalExam",
-        "component": "FinalExam 1",
-        "marks": 87,
-        "totalMarks": 100
-      }
-    ],
-    "weightedPercentages": {
-      "Homework": 36.67,
-      "Discussions": 26.25,
-      "FinalExam": 26.1
-    },
-    "finalPercentage": 89.02,
-    "finalGrade": "B"
-  }
-  // ... additional students
-]
-```
+Access information about Star Wars films, characters, planets, and more.
 
-**HTML Format Example**: `/api/gradebook/YOUR_API_KEY/CS450?format=html`
+#### Entity List Endpoints
+
+**Endpoint**: `/api/starwars/{entity_type}/{apikey}`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+- `entity_type`: Type of entity (films, people, planets, species, starships, vehicles)
+
+**Query Parameters**:
+
+- `skip`: Number of records to skip - default: 0
+- `limit`: Maximum number of records to return - default: 10
+- `search`: Search term to filter results - optional
+- `format`: Output format ('json', 'html', 'download') - default: 'json'
+
+**Response**:
+
+- JSON object with count and results array
+- HTML page with formatted entity table
+- Downloadable HTML file
+
+**Example**: `/api/starwars/people/YOUR_API_KEY?search=luke&limit=5`
+
+#### Single Entity Endpoint
+
+**Endpoint**: `/api/starwars/{entity_type}/{entity_id}/{apikey}`
+
+**Methods**: GET
+
+**URL Parameters**:
+
+- `apikey`: Your API key
+- `entity_type`: Type of entity (films, people, planets, species, starships, vehicles)
+- `entity_id`: ID of the specific entity
+
+**Query Parameters**:
+
+- `format`: Output format ('json', 'html', 'download') - default: 'json'
+
+**Response**:
+
+- JSON object with entity details
+- HTML page with formatted entity details
+- Downloadable HTML file
+
+**Example**: `/api/starwars/films/1/YOUR_API_KEY`
 
 ## Authentication
 
@@ -432,6 +434,20 @@ Generate and manage course gradebooks.
 1. Visit `/signup`
 2. Enter your full name, PDX email address, and password
 3. Upon successful registration, you'll be redirected to the dashboard
+
+### Google OAuth
+
+1. Click "Continue with Google" on the login page
+2. Authorize with your Google account
+3. You'll be automatically registered and logged in
+
+### Password Reset
+
+1. Click "Forgot Password?" on the login page
+2. Enter your email address and submit
+3. Check your email for the OTP (one-time password)
+4. Enter the OTP to verify your identity
+5. Set a new password
 
 ### API Key Management
 
@@ -456,6 +472,7 @@ Generate and manage course gradebooks.
 - Python 3.8+
 - Google Cloud SDK (for Datastore)
 - Google Cloud Datastore credentials
+- Docker (for container deployment)
 
 ### Environment Setup
 
@@ -484,6 +501,7 @@ Generate and manage course gradebooks.
    ```
    export GOOGLE_APPLICATION_CREDENTIALS="path/to/your/credentials.json"
    export FASTAPI_URL="http://localhost:8000"  # For local development
+   export SENDER_PASSWORD="your-email-password"  # For password reset emails
    ```
 
 5. Initialize the Datastore emulator (for local development):
@@ -499,9 +517,9 @@ To run the application locally:
 python src/run.py
 ```
 
-This will start both the Flask application (on port 5000) and the FastAPI service (on port 8000).
+This will start both the Flask application (on port 8080) and the FastAPI service (on port 8000).
 
-Access the web interface at http://localhost:5000
+Access the web interface at http://localhost:8080
 
 ## Deployment
 
@@ -513,16 +531,22 @@ Access the web interface at http://localhost:5000
    docker build -t apiverse .
    ```
 
-2. Push to Google Container Registry:
+2. Tag and push to Google Artifact Registry:
 
    ```
-   docker tag apiverse gcr.io/[PROJECT_ID]/apiverse
-   docker push gcr.io/[PROJECT_ID]/apiverse
+   docker tag apiverse us-central1-docker.pkg.dev/[PROJECT_ID]/apiverse/apiverse:latest
+   docker push us-central1-docker.pkg.dev/[PROJECT_ID]/apiverse/apiverse:latest
    ```
 
 3. Deploy to Cloud Run:
    ```
-   gcloud run deploy apiverse --image gcr.io/[PROJECT_ID]/apiverse --platform managed
+   gcloud run deploy apiverse \
+       --image=us-central1-docker.pkg.dev/[PROJECT_ID]/apiverse/apiverse:latest \
+       --platform=managed \
+       --region=us-central1 \
+       --allow-unauthenticated \
+       --service-account=[SERVICE_ACCOUNT] \
+       --set-env-vars=GOOGLE_CLOUD_PROJECT=,SENDER_PASSWORD=[EMAIL_PASSWORD]
    ```
 
 ## Security Considerations
@@ -533,6 +557,8 @@ Access the web interface at http://localhost:5000
 - PDX email restriction prevents unauthorized access
 - API endpoints validate key ownership before processing
 - Downloaded files are automatically cleaned up after 1 hour
+- OAuth implementation uses state parameter to prevent CSRF attacks
+- Password reset uses time-limited OTP
 
 ## Contributing
 
